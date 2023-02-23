@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>flexcards.js</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .col-center{display:flex;flex-direction:column;justify-content:center;align-items:center}.row-center{display:flex;flex-direction:row;justify-content:center;align-items:center}.d-block{display:block}.d-flex{display:flex;flex-wrap:nowrap}.d-inline-flex{display:inline-flex}.d-none{display:none}.align-center{align-items:center}.align-f-end{align-items:flex-end}.justify-baseline{justify-content:baseline}.justify-center{justify-content:center}.space-between{justify-content:space-between}.space-evenly{justify-content:space-evenly}.column{flex-flow:column nowrap}.column-reverse{flex-direction:column-reverse}.row{flex-flow: row nowrap}.row-reverse{flex-direction:row-reverse}.wrap{flex-wrap:wrap}
+    </style>
+
+</head>
+<body>
+
+    <div class="flexcards d-flex column align-center">
+        <div class="container row-center">
+            <button class="carret left col-center" type="button">
+                <img src="./carret.svg" alt="Toggle left">
+            </button>
+
+            <div class="content d-flex">
+                <article class="d-flex align-center" data-id="0">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                    ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                    quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+                </article>
+
+                <article class="d-flex align-center" data-id="0">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                    ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                    quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+                </article>
+
+                <article class="d-flex align-center" data-id="0">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                    ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                    quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+                </article>
+            </div>
+
+            <button class="carret right col-center" type="button">
+                <img src="./carret.svg" alt="Toggle right">
+            </button>
+        </div>
+
+        <div class="index row-center"></div>
+    </div>
+
+    <script src="./index.js"></script>
+
+</body>
+</html>
