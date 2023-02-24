@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Document</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/styles/index.css">
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        #flexcards {
+            margin: 1em;
+            width: 800px;
+            height: 450px;
+            border: 1px solid #000;
+        }
+
+        #flexcards article {
+            padding: 3em;
+        }
+    </style>
+
+    <script src="../dist/flexcards.js"></script>
+
+</head>
+<body>
+
+    <div id="flexcards">
+        <article>
+            <h1>First lorem :</h1>
+
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+        </article>
+
+        <article>
+            <h1>Second lorem :</h1>
+
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+        </article>
+
+        <article>
+            <h1>Third lorem :</h1>
+
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+        </article>
+    </div>
+
+    <script>
+        const flexcard = new FlexCards("#flexcards");
+        flexcard.carousel();
+    </script>
+
+</body>
+</html>
