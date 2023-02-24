@@ -1,6 +1,32 @@
+/**
+ * flexcards.js
+ * 
+ * @see https://github.com/TheRedMineTheRedMine/flexcards.js
+ * @author TheRedMineTheRedMine <theredminedu51@gmail.com>
+ * @copyright 2023 - 2024
+ * @license TheUnlicense
+ */
+
+/**
+ * Same as `document.createElement(element)`.
+ * 
+ * @param element element to be created
+ * @returns an HTML element
+ */
+
 function createElement<E = HTMLElement>(element: keyof HTMLElementTagNameMap) {
     return window.document.createElement(element) as unknown as E;
 }
+
+
+/**
+ * Returns the first element that is a descendant of node that matches selectors. Otherwise return
+ * a default element (by default a `div` element).
+ * 
+ * @param element selector.
+ * @param defaultElement default element created if not exists.
+ * @returns HTML element.
+ */
 
 function querySelector(element: string, defaultElement: keyof HTMLElementTagNameMap = "div") {
     try {
@@ -13,24 +39,47 @@ function querySelector(element: string, defaultElement: keyof HTMLElementTagName
 }
 
 class FlexCards {
-    private readonly width = 0;
-    private readonly height = 0;
+
+    /** @var length number of items */
     private readonly length: number;
 
+    /** @var "animation-time" */
     public "animation-time" = 550;
+
+    /** @var delay delay between toggling to the next item. */
     public delay = 6000;
+
+    /** @var index */
     public index = 0;
 
+    /** @var articles list of items */
     protected articles: NodeListOf<HTMLElement>;
+
+    /** @var components dictionary of used components */
     protected components: Record<string, any> = Object();
+
+    /** @var container the HTML container used to render the `flexcards.js` instance */
     protected container: HTMLElement;
-    protected interval: number = 0;
+
+    /** @var interval the interval used to automate the scroll */
+    protected interval: number = setInterval(() => void 0, this.delay);
+
+
+    /**
+     * New flexbox.js instance.
+     * @param element HTML selector.
+     */
 
     constructor (element: string) {
         this.container = querySelector(element) as HTMLDivElement;
         this.articles = this.container.querySelectorAll('article');
         this.length = Number(this.articles.length);
     }
+
+    /**
+     * Set up the necessary components.
+     * @returns generated components.
+     */
 
     private mount() {
         // Create components
@@ -42,6 +91,7 @@ class FlexCards {
             image_a = createElement<HTMLImageElement>('img'),
             image_b = createElement<HTMLImageElement>('img');
 
+        // Add classes
         container.classList.add('flexcards__container');
         content.classList.add('flexcards__content');
         index.classList.add('flexcards__index');
@@ -50,6 +100,7 @@ class FlexCards {
         image_a.classList.add('flexcards__carret');
         image_b.classList.add('flexcards__carret');
 
+        // And others attributes
         arrow_a.type = "button";
         arrow_b.type = "button";
         image_a.src = "../assets/icons/carret.svg";
@@ -57,7 +108,7 @@ class FlexCards {
         image_b.src = "../assets/icons/carret.svg";
         image_b.alt = "Toggle right";
 
-        // Mount in container
+        // Mount components
         this.container.classList.add("flexcards__wrapper");
         this.container.innerHTML = "";
 
@@ -67,13 +118,15 @@ class FlexCards {
         container.append(arrow_a, content, arrow_b);
 
         this.articles.forEach((article, key) => {
+            // Indexing points
             let circle = createElement('span');
-            circle.classList.add('flexcards__point');
             if (!key) circle.classList.add('current');
 
+            circle.classList.add('flexcards__point');
             index.appendChild(circle);
-            content.appendChild(article);
 
+            // Add articles in the content
+            content.appendChild(article);
             article.classList.add('flexcards__card');
             article.setAttribute('data-id', key.toString());
         });
@@ -84,11 +137,17 @@ class FlexCards {
         };
     }
 
+
+    /**
+     * Display an amazing carousel for your items.
+     */
+
     public carousel() {
         // Mount components
         const components = this.mount();
         this.container.classList.add('flexcards__carousel');
 
+        // Render function
         function render(this: FlexCards, step: number = 0) {
             const updateContent = () => {
                 // put the animation in this function
@@ -97,6 +156,7 @@ class FlexCards {
                     el.remove();
                 });
 
+                // Add items in a specific order
                 components.content.append(
                     this.articles.item((this.index - 1 < 0 ? this.length : this.index) - 1),
                     this.articles.item(this.index),
@@ -147,8 +207,11 @@ class FlexCards {
         }
 
         // Apply onClick event
-        [components.arrows.left, components.arrows.right].forEach(arrow => arrow.onclick = e => onClick.call(this, e));
+        [components.arrows.left, components.arrows.right].forEach(
+            arrow => arrow.onclick = e => onClick.call(this, e)
+        );
 
+        // Return components and render a first time to complete setup.
         this.components = components;
         render.call(this);
     }
