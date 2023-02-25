@@ -86,9 +86,11 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #bbb;
+            background: #ccc;
             transition: all .2s;
+            cursor: pointer;
 
+            &:hover { background: #aaa }
             &.current { background: #888 }
         }
     }

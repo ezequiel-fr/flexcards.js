@@ -88,15 +88,24 @@ class FlexCards {
         this.articles.forEach((article, key) => {
             // Indexing points
             let circle = createElement('span');
+            circle.classList.add('flexcards__point');
             if (!key)
                 circle.classList.add('current');
-            circle.classList.add('flexcards__point');
+            circle.onclick = e => (function (ev) {
+                let count = key - this.index;
+                for (let i = 0; i < Math.abs(count); i++) {
+                    if (count < 0)
+                        arrow_a.click();
+                    else if (count > 0)
+                        arrow_b.click();
+                }
+            }).call(this, e);
             index.appendChild(circle);
             // Add articles in the content
             content.appendChild(article);
             article.classList.add('flexcards__card');
             article.setAttribute('data-id', key.toString());
-        });
+        }, this);
         return {
             container, content, index,
             arrows: { left: arrow_a, right: arrow_b },

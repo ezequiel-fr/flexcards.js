@@ -82,8 +82,12 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #bbb;
+  background: #ccc;
   transition: all 0.2s;
+  cursor: pointer;
+}
+.flexcards__wrapper .flexcards__index .flexcards__point:hover {
+  background: #aaa;
 }
 .flexcards__wrapper .flexcards__index .flexcards__point.current {
   background: #888;
