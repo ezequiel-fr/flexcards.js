@@ -1,4 +1,5 @@
 "use strict";
+;
 /**
  * flexcards.js
  *
@@ -60,7 +61,7 @@ class FlexCards {
      * Set up the necessary components.
      * @returns generated components.
      */
-    mount() {
+    mount({ indexType = "points" }) {
         // Create components
         let container = createElement('div'), content = createElement('div'), index = createElement('div'), arrow_a = createElement('button'), arrow_b = createElement('button'), image_a = createElement('img'), image_b = createElement('img');
         // Add classes
@@ -85,22 +86,33 @@ class FlexCards {
         arrow_a.appendChild(image_a);
         arrow_b.appendChild(image_b);
         container.append(arrow_a, content, arrow_b);
+        // Index (numbers)
+        if (indexType === 'numbers') {
+            let current = createElement('span'), limit = createElement('span');
+            current.classList.add('flexcards__count');
+            limit.classList.add('flexcards__limit');
+            current.innerHTML = "1";
+            limit.innerHTML = this.length.toString();
+            index.append(current, '/', limit);
+        }
         this.articles.forEach((article, key) => {
             // Indexing points
-            let circle = createElement('span');
-            circle.classList.add('flexcards__point');
-            if (!key)
-                circle.classList.add('current');
-            circle.onclick = e => (function (ev) {
-                let count = key - this.index;
-                for (let i = 0; i < Math.abs(count); i++) {
-                    if (count < 0)
-                        arrow_a.click();
-                    else if (count > 0)
-                        arrow_b.click();
-                }
-            }).call(this, e);
-            index.appendChild(circle);
+            if (indexType === 'points') {
+                let circle = createElement('span');
+                circle.classList.add('flexcards__point');
+                if (!key)
+                    circle.classList.add('current');
+                circle.onclick = e => (function (ev) {
+                    let count = key - this.index;
+                    for (let i = 0; i < Math.abs(count); i++) {
+                        if (count < 0)
+                            arrow_a.click();
+                        else if (count > 0)
+                            arrow_b.click();
+                    }
+                }).call(this, e);
+                index.appendChild(circle);
+            }
             // Add articles in the content
             content.appendChild(article);
             article.classList.add('flexcards__card');
@@ -114,9 +126,9 @@ class FlexCards {
     /**
      * Display an amazing carousel for your items.
      */
-    carousel() {
+    carousel(params) {
         // Mount components
-        const components = this.mount();
+        const components = this.mount(params || Object());
         this.container.classList.add('flexcards__carousel');
         // Render function
         function render(step = 0) {
@@ -141,9 +153,15 @@ class FlexCards {
             else
                 updateContent();
             // Toggle index
-            components.index.querySelectorAll('span').forEach((point, key) => {
-                point.classList[this.index === key ? 'add' : 'remove']('current');
-            });
+            if ((params === null || params === void 0 ? void 0 : params.indexType) && params.indexType === 'numbers') {
+                querySelector('.flexcards__wrapper .flexcards__index .flexcards__count')
+                    .innerHTML = (this.index + 1).toString();
+            }
+            else {
+                components.index.querySelectorAll('span').forEach((point, key) => {
+                    point.classList[this.index === key ? 'add' : 'remove']('current');
+                });
+            }
             // Re-set "auto-scroll"
             this.interval = setInterval(() => components.arrows.right.click(), this.delay);
         }

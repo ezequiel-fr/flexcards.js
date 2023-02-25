@@ -1,3 +1,6 @@
+interface FlexCardsParams {
+    indexType?: 'points' | 'numbers';
+}
 /**
  * flexcards.js
  *
@@ -52,5 +55,5 @@ declare class FlexCards {
     /**
      * Display an amazing carousel for your items.
      */
-    carousel(): void;
+    carousel(params?: FlexCardsParams): void;
 }

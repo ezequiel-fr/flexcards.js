@@ -1,3 +1,7 @@
+interface FlexCardsParams {
+    indexType?: 'points' | 'numbers'
+};
+
 /**
  * flexcards.js
  * 
@@ -81,7 +85,7 @@ class FlexCards {
      * @returns generated components.
      */
 
-    private mount() {
+    private mount({ indexType = "points" }: FlexCardsParams) {
         // Create components
         let container = createElement<HTMLDivElement>('div'),
             content = createElement<HTMLDivElement>('div'),
@@ -117,22 +121,37 @@ class FlexCards {
         arrow_b.appendChild(image_b);
         container.append(arrow_a, content, arrow_b);
 
+        // Index (numbers)
+        if (indexType === 'numbers') {
+            let current = createElement('span'),
+                limit = createElement('span');
+
+            current.classList.add('flexcards__count');
+            limit.classList.add('flexcards__limit');
+
+            current.innerHTML = "1";
+            limit.innerHTML = this.length.toString();
+            index.append(current, '/', limit);
+        }
+
         this.articles.forEach((article, key) => {
             // Indexing points
-            let circle = createElement('span');            
-            circle.classList.add('flexcards__point');
-            if (!key) circle.classList.add('current');
+            if (indexType === 'points') {
+                let circle = createElement('span');
+                circle.classList.add('flexcards__point');
+                if (!key) circle.classList.add('current');
 
-            circle.onclick = e => (function (this: FlexCards, ev: MouseEvent) {
-                let count = key - this.index;
+                circle.onclick = e => (function (this: FlexCards, ev: MouseEvent) {
+                    let count = key - this.index;
 
-                for (let i = 0; i < Math.abs(count); i++) {
-                    if (count < 0) arrow_a.click();
-                    else if (count > 0) arrow_b.click();
-                }
-            }).call(this, e);
+                    for (let i = 0; i < Math.abs(count); i++) {
+                        if (count < 0) arrow_a.click();
+                        else if (count > 0) arrow_b.click();
+                    }
+                }).call(this, e);
 
-            index.appendChild(circle);
+                index.appendChild(circle);
+            }
 
             // Add articles in the content
             content.appendChild(article);
@@ -151,9 +170,9 @@ class FlexCards {
      * Display an amazing carousel for your items.
      */
 
-    public carousel() {
+    public carousel(params?: FlexCardsParams) {
         // Mount components
-        const components = this.mount();
+        const components = this.mount(params || Object());
         this.container.classList.add('flexcards__carousel');
 
         // Render function
@@ -185,9 +204,14 @@ class FlexCards {
             } else updateContent();
 
             // Toggle index
-            components.index.querySelectorAll('span').forEach((point, key) => {
-                point.classList[this.index === key ? 'add' : 'remove']('current');
-            });
+            if (params?.indexType && params.indexType === 'numbers') {
+                querySelector('.flexcards__wrapper .flexcards__index .flexcards__count')
+                    .innerHTML = (this.index + 1).toString();
+            } else {
+                components.index.querySelectorAll('span').forEach((point, key) => {
+                    point.classList[this.index === key ? 'add' : 'remove']('current');
+                });
+            }
 
             // Re-set "auto-scroll"
             this.interval = setInterval(() => components.arrows.right.click(), this.delay);
