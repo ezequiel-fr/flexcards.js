@@ -18,16 +18,21 @@
             font-family: sans-serif;
         }
 
+        body {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+        }
+
         #flexcards {
-            margin: 1em;
-            width: 800px;
+            margin: 1em 0;
+            width: calc(50vw - 2em);
             height: 450px;
             border: 1px solid #000;
         }
 
-        #flexcards article {
-            padding: 3em;
-        }
+        .basic article { padding: 3em }
     </style>
 
     <script src="../dist/flexcards.js"></script>
@@ -35,7 +40,7 @@
 </head>
 <body>
 
-    <div id="flexcards">
+    <div id="flexcards" class="basic">
         <article>
             <h1>First lorem :</h1>
 
@@ -77,54 +82,22 @@
         </article>
     </div>
 
-    <div id="flexcards" class="test">
-        <article>
-            <h1>First lorem :</h1>
-
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
-            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
-            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
-        </article>
-
-        <article>
-            <h1>Second lorem :</h1>
-
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
-            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
-            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
-        </article>
-
-        <article>
-            <h1>Third lorem :</h1>
-
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
-            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
-            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
-        </article>
-
-        <article>
-            <h1>Fourth lorem :</h1>
-
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
-            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
-            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
-        </article>
-
-        <article>
-            <h1>Fifth lorem :</h1>
-
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
-            ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
-            quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
-        </article>
+    <div id="flexcards" class="images">
+        <img src="../assets/images/landscape1.jpeg" alt="Landscape">
+        <img src="../assets/images/landscape2.jpg" alt="Landscape">
+        <img src="../assets/images/landscape3.jpg" alt="Landscape">
     </div>
 
     <script>
         const flexcard = new FlexCards("#flexcards");
-        const flexcard2 = new FlexCards("#flexcards.test");
+        const flexcard2 = new FlexCards("#flexcards.images");
 
         flexcard.carousel();
-        flexcard2.carousel({ indexType: 'numbers' });
+        flexcard2.carousel({
+            theme: '#ae58f4',
+            component: 'images',
+            indexType: 'numbers',
+        });
     </script>
 
 </body>

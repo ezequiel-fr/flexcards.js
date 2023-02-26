@@ -1,4 +1,6 @@
 interface FlexCardsParams {
+    theme?: string;
+    component?: 'default' | 'images';
     indexType?: 'points' | 'numbers';
 }
 /**
@@ -27,19 +29,19 @@ declare function createElement<E = HTMLElement>(element: keyof HTMLElementTagNam
 declare function querySelector(element: string, defaultElement?: keyof HTMLElementTagNameMap): Element;
 declare class FlexCards {
     /** @var length number of items */
-    private readonly length;
+    private length;
     /** @var "animation-time" */
     "animation-time": number;
     /** @var delay delay between toggling to the next item. */
     delay: number;
     /** @var index */
     index: number;
-    /** @var articles list of items */
-    protected articles: NodeListOf<HTMLElement>;
+    /** @var slides list of items */
+    protected slides: Array<HTMLElement>;
     /** @var components dictionary of used components */
     protected components: Record<string, any>;
     /** @var container the HTML container used to render the `flexcards.js` instance */
-    protected container: HTMLElement;
+    protected readonly container: HTMLElement;
     /** @var interval the interval used to automate the scroll */
     protected interval: number;
     /**
@@ -56,4 +58,28 @@ declare class FlexCards {
      * Display an amazing carousel for your items.
      */
     carousel(params?: FlexCardsParams): void;
+}
+declare class RGBtoHSL {
+    private r;
+    private g;
+    private b;
+    private target;
+    private targetHSL;
+    constructor(r: number, g: number, b: number);
+    private clamp;
+    private multiply;
+    private hueRotate;
+    private sepia;
+    private saturate;
+    private brightness;
+    private contrast;
+    private linear;
+    private invert;
+    private hsl;
+    solve(): string;
+    private solveWide;
+    private solveNarrow;
+    private spsa;
+    private loss;
+    private toString;
 }

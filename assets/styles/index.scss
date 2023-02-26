@@ -7,6 +7,7 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+    user-select: none;
     // Min sizes
 
     .flexcards__container {
@@ -32,6 +33,18 @@
                 width: 100%;
                 height: 100%;
                 overflow: hidden;
+                transform: none;
+                user-select: inherit;
+
+                // Images
+                &.flexcards__image {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    object-fit: cover;
+                    user-select: none;
+                }
 
                 // animation
             }
@@ -81,17 +94,21 @@
         bottom: 5px;
         gap: 5px;
         z-index: 2;
+        color: var(--theme);
 
         .flexcards__point {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #ccc;
+            background: var(--theme);
             transition: all .2s;
             cursor: pointer;
+            opacity: .4;
 
-            &:hover { background: #aaa }
-            &.current { background: #888 }
+            &:hover { opacity: 55% }
+            &.current { opacity: 65% }
         }
+
+        .flexcards__count, .flexcards__limit { pointer-events: none }
     }
 }
