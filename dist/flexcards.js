@@ -1,5 +1,4 @@
 "use strict";
-;
 /**
  * flexcards.js
  *
@@ -8,6 +7,7 @@
  * @copyright 2023 - 2024
  * @license TheUnlicense
  */
+;
 /**
  * Same as `document.createElement(element)`.
  *
@@ -15,7 +15,7 @@
  * @returns an HTML element
  */
 function createElement(element) {
-    return window.document.createElement(element);
+    return window.document.createElement(element, { is: undefined });
 }
 /**
  * Returns the first element that is a descendant of node that matches selectors. Otherwise return
@@ -72,11 +72,9 @@ class FlexCards {
         theme = theme.replace(/^([a-f\d])([a-f\d])([a-f\d])$/i, (_m, r, g, b) => r + r + g + g + b + b);
         const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
         // console.log(result, theme);
-        let rgb = result ? [
-            parseInt(result[1], 16),
-            parseInt(result[2], 16),
-            parseInt(result[3], 16),
-        ] : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
+        let rgb = result // Parse numbers from hexadecimal to decimal
+            ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+            : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
         // Create components
         let container = createElement('div'), content = createElement('div'), index = createElement('div'), arrow_a = createElement('button'), arrow_b = createElement('button'), image_a = createElement('img'), image_b = createElement('img');
         // Add classes
@@ -88,7 +86,6 @@ class FlexCards {
         image_a.classList.add('flexcards__carret');
         image_b.classList.add('flexcards__carret');
         // And others attributes
-        // index.style.color = "#" + theme;
         index.setAttribute('style', `--theme:#${theme}`);
         arrow_a.type = "button";
         arrow_b.type = "button";
@@ -121,7 +118,7 @@ class FlexCards {
                 circle.classList.add('flexcards__point');
                 if (!key)
                     circle.classList.add('current');
-                circle.onclick = e => (function (ev) {
+                circle.onclick = () => (function () {
                     let count = key - this.index;
                     for (let i = 0; i < Math.abs(count); i++) {
                         if (count < 0)
@@ -129,7 +126,7 @@ class FlexCards {
                         else if (count > 0)
                             arrow_b.click();
                     }
-                }).call(this, e);
+                }).call(this);
                 index.appendChild(circle);
             }
             // Add slides in the content box
@@ -238,9 +235,15 @@ class RGBtoHSL {
         angle = angle / 180 * Math.PI;
         let sin = Math.sin(angle), cos = Math.cos(angle);
         this.multiply([
-            0.213 + cos * 0.787 - sin * 0.213, 0.715 - cos * 0.715 - sin * 0.715, 0.072 - cos * 0.072 + sin * 0.928,
-            0.213 - cos * 0.213 + sin * 0.143, 0.715 + cos * 0.285 + sin * 0.140, 0.072 - cos * 0.072 - sin * 0.283,
-            0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072
+            .213 + cos * .787 - sin * .213,
+            .715 - cos * .715 - sin * .715,
+            .072 - cos * .072 + sin * .928,
+            .213 - cos * .213 + sin * .143,
+            .715 + cos * .285 + sin * .140,
+            .072 - cos * .072 - sin * .283,
+            .213 - cos * .213 - sin * .787,
+            .715 - cos * .715 + sin * .715,
+            .072 + cos * .928 + sin * .072
         ]);
     }
     sepia(value = 1) {
@@ -298,7 +301,7 @@ class RGBtoHSL {
     }
     solveWide() {
         const A = 5, c = 15, a = [60, 180, 18000, 600, 1.2, 1.2];
-        let best = { loss: Infinity };
+        let best = { loss: Infinity, values: [] };
         for (let i = 0; best.loss > 25 && i < 3; i++) {
             let initial = [50, 20, 3750, 50, 100, 100];
             let result = this.spsa(A, a, c, initial, 1000);
@@ -313,7 +316,6 @@ class RGBtoHSL {
         const a = [0.25 * A1, 0.25 * A1, A1, 0.25 * A1, 0.2 * A1, 0.2 * A1];
         return this.spsa(A, a, c, wide.values, 500);
     }
-    // @ts-ignore
     spsa(A, a, c, values, iters) {
         const alpha = 1, gamma = 1 / 6;
         let best = null, bestLoss = Infinity, deltas = new Array(6), highArgs = new Array(6), lowArgs = new Array(6);
@@ -354,7 +356,7 @@ class RGBtoHSL {
                 bestLoss = loss;
             }
         }
-        return { values: best, loss: bestLoss };
+        return { values: best || [], loss: bestLoss };
     }
     loss(filters) {
         let color = new RGBtoHSL(0, 0, 0);
@@ -371,6 +373,8 @@ class RGBtoHSL {
     }
     toString(filters) {
         const fmt = (idx, multiplier = 1) => Math.round(filters[idx] * multiplier);
-        return `invert(${fmt(0)}%) sepia(${fmt(1)}%) saturate(${fmt(2)}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(4)}%) contrast(${fmt(5)}%)`;
+        return `invert(${fmt(0)}%) ` + `sepia(${fmt(1)}%) `
+            + `saturate(${fmt(2)}%) ` + `hue-rotate(${fmt(3, 3.6)}deg) `
+            + `brightness(${fmt(4)}%) ` + `contrast(${fmt(5)}%)`;
     }
 }
