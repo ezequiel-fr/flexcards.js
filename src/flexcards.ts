@@ -1,9 +1,3 @@
-interface FlexCardsParams {
-    theme?: string,
-    component?: 'default' | 'images',
-    indexType?: 'points' | 'numbers',
-};
-
 /**
  * flexcards.js
  * 
@@ -13,6 +7,18 @@ interface FlexCardsParams {
  * @license TheUnlicense
  */
 
+
+/**
+ * Parameters that can be entered after initializing flexcards.js.
+ * @interface FlexCardsParams
+ */
+
+interface FlexCardsParams {
+    theme?: string,
+    component?: 'default' | 'images',
+    indexType?: 'numbers' | 'points',
+};
+
 /**
  * Same as `document.createElement(element)`.
  * 
@@ -21,9 +27,8 @@ interface FlexCardsParams {
  */
 
 function createElement<E = HTMLElement>(element: keyof HTMLElementTagNameMap) {
-    return window.document.createElement(element) as unknown as E;
+    return window.document.createElement(element, { is: undefined }) as unknown as E;
 }
-
 
 /**
  * Returns the first element that is a descendant of node that matches selectors. Otherwise return
@@ -91,7 +96,9 @@ class FlexCards {
         indexType = "points",
     }: FlexCardsParams) {
         // Get slides and set length attr
-        this.slides = Array.from(this.container.querySelectorAll(component === 'default' ? 'article' : 'img'));
+        this.slides = Array.from(this.container.querySelectorAll(
+            component === 'default' ? 'article' : 'img'
+        ));
         this.length = this.slides.length;
 
         // Get color theme
@@ -100,11 +107,9 @@ class FlexCards {
         const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
         // console.log(result, theme);
 
-        let rgb = result ? [
-                parseInt(result[1], 16),
-                parseInt(result[2], 16),
-                parseInt(result[3], 16),
-            ] : [0, 0, 0],
+        let rgb = result // Parse numbers from hexadecimal to decimal
+            ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+            : [0, 0, 0],
             filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
 
         // Create components
@@ -126,7 +131,6 @@ class FlexCards {
         image_b.classList.add('flexcards__carret');
 
         // And others attributes
-        // index.style.color = "#" + theme;
         index.setAttribute('style', `--theme:#${theme}`);
         arrow_a.type = "button";
         arrow_b.type = "button";
@@ -148,8 +152,7 @@ class FlexCards {
 
         // Index (numbers)
         if (indexType === 'numbers') {
-            let current = createElement('span'),
-                limit = createElement('span');
+            let current = createElement('span'), limit = createElement('span');
 
             current.classList.add('flexcards__count');
             limit.classList.add('flexcards__limit');
@@ -167,14 +170,14 @@ class FlexCards {
                 circle.classList.add('flexcards__point');
                 if (!key) circle.classList.add('current');
 
-                circle.onclick = e => (function (this: FlexCards, ev: MouseEvent) {
+                circle.onclick = () => (function (this: FlexCards) {
                     let count = key - this.index;
 
                     for (let i = 0; i < Math.abs(count); i++) {
                         if (count < 0) arrow_a.click();
                         else if (count > 0) arrow_b.click();
                     }
-                }).call(this, e);
+                }).call(this);
 
                 index.appendChild(circle);
             }
@@ -227,6 +230,7 @@ class FlexCards {
                     left: components.content.clientWidth * (1 + step),
                     behavior: 'smooth',
                 });
+
                 setTimeout(updateContent, this["animation-time"]);
             } else updateContent();
 
@@ -315,9 +319,15 @@ class RGBtoHSL {
         let sin = Math.sin(angle), cos = Math.cos(angle);
 
         this.multiply([
-            0.213 + cos * 0.787 - sin * 0.213, 0.715 - cos * 0.715 - sin * 0.715, 0.072 - cos * 0.072 + sin * 0.928,
-            0.213 - cos * 0.213 + sin * 0.143, 0.715 + cos * 0.285 + sin * 0.140, 0.072 - cos * 0.072 - sin * 0.283,
-            0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072
+            .213 + cos * .787 - sin * .213,
+            .715 - cos * .715 - sin * .715,
+            .072 - cos * .072 + sin * .928,
+            .213 - cos * .213 + sin * .143,
+            .715 + cos * .285 + sin * .140,
+            .072 - cos * .072 - sin * .283,
+            .213 - cos * .213 - sin * .787,
+            .715 - cos * .715 + sin * .715,
+            .072 + cos * .928 + sin * .072
         ]);
     }
 
@@ -382,9 +392,9 @@ class RGBtoHSL {
 
     private solveWide() {
         const A = 5, c = 15, a = [60, 180, 18000, 600, 1.2, 1.2];
-        let best = { loss: Infinity };
+        let best: { loss: number, values: number[] } = { loss: Infinity, values: [] };
 
-        for(let i = 0; best.loss > 25 && i < 3; i++) {
+        for (let i = 0; best.loss > 25 && i < 3; i++) {
             let initial = [50, 20, 3750, 50, 100, 100];
             let result = this.spsa(A, a, c, initial, 1000);
 
@@ -394,7 +404,7 @@ class RGBtoHSL {
         return best;
     }
 
-    private solveNarrow(wide: any) {
+    private solveNarrow(wide: { loss: number, values: number[] }) {
         const A = wide.loss;
         const c = 2, A1 = A + 1;
         const a = [0.25 * A1, 0.25 * A1, A1, 0.25 * A1, 0.2 * A1, 0.2 * A1];
@@ -402,8 +412,7 @@ class RGBtoHSL {
         return this.spsa(A, a, c, wide.values, 500);
     }
 
-    // @ts-ignore
-    private spsa(A, a, c, values, iters) {
+    private spsa(A: number, a: number[], c: number, values: number[], iters: number) {
         const alpha = 1, gamma = 1/6;
 
         let best = null,
@@ -452,7 +461,7 @@ class RGBtoHSL {
             }
         }
 
-        return { values: best, loss: bestLoss };
+        return { values: best || [], loss: bestLoss };
     }
 
     private loss(filters: number[]) {
@@ -474,6 +483,9 @@ class RGBtoHSL {
 
     private toString(filters: number[]) {
         const fmt = (idx: number, multiplier = 1) => Math.round(filters[idx] * multiplier);
-        return `invert(${fmt(0)}%) sepia(${fmt(1)}%) saturate(${fmt(2)}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(4)}%) contrast(${fmt(5)}%)`;
+
+        return `invert(${fmt(0)}%) `     + `sepia(${fmt(1)}%) `
+             + `saturate(${fmt(2)}%) `   + `hue-rotate(${fmt(3, 3.6)}deg) `
+             + `brightness(${fmt(4)}%) ` + `contrast(${fmt(5)}%)`;
     }
 }

@@ -1,8 +1,3 @@
-interface FlexCardsParams {
-    theme?: string;
-    component?: 'default' | 'images';
-    indexType?: 'points' | 'numbers';
-}
 /**
  * flexcards.js
  *
@@ -11,6 +6,15 @@ interface FlexCardsParams {
  * @copyright 2023 - 2024
  * @license TheUnlicense
  */
+/**
+ * Parameters that can be entered after initializing flexcards.js.
+ * @interface FlexCardsParams
+ */
+interface FlexCardsParams {
+    theme?: string;
+    component?: 'default' | 'images';
+    indexType?: 'numbers' | 'points';
+}
 /**
  * Same as `document.createElement(element)`.
  *
