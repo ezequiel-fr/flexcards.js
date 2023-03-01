@@ -14,9 +14,10 @@
  */
 
 interface FlexCardsParams {
-    theme?: string,
-    component?: 'default' | 'images',
-    indexType?: 'numbers' | 'points',
+    component?: 'default' | 'images';
+    indexType?: 'numbers' | 'points';
+    theme?: string;
+    timer?: boolean;
 };
 
 /**
@@ -55,13 +56,22 @@ class FlexCards {
     private length: number = 0;
 
     /** @var "animation-time" */
-    public "animation-time" = 550;
+    private readonly "animation-time" = 550;
+
+    /** @var "refresh-time" */
+    private "refresh-time" = 250;
 
     /** @var delay delay between toggling to the next item. */
     public delay = 6000;
 
     /** @var index */
     public index = 0;
+
+    /** @var timeElapsed */
+    public timeElapsed = 0;
+
+    /** @var getElapsed */
+    private getElapsed = setInterval(() => void 0, this.delay);
 
     /** @var slides list of items */
     protected slides: Array<HTMLElement> = [];
@@ -91,9 +101,10 @@ class FlexCards {
      */
 
     private mount({
-        theme = "#666",
         component = "default",
         indexType = "points",
+        theme = "#666",
+        timer = false,
     }: FlexCardsParams) {
         // Get slides and set length attr
         this.slides = Array.from(this.container.querySelectorAll(
@@ -105,7 +116,6 @@ class FlexCards {
         theme = theme.replace('#', '');
         theme = theme.replace(/^([a-f\d])([a-f\d])([a-f\d])$/i, (_m, r, g, b) => r+r+g+g+b+b);
         const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
-        // console.log(result, theme);
 
         let rgb = result // Parse numbers from hexadecimal to decimal
             ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
@@ -119,7 +129,8 @@ class FlexCards {
             arrow_a = createElement<HTMLButtonElement>('button'),
             arrow_b = createElement<HTMLButtonElement>('button'),
             image_a = createElement<HTMLImageElement>('img'),
-            image_b = createElement<HTMLImageElement>('img');
+            image_b = createElement<HTMLImageElement>('img'),
+            timerDisplay = createElement('span');
 
         // Add classes
         container.classList.add('flexcards__container');
@@ -131,7 +142,7 @@ class FlexCards {
         image_b.classList.add('flexcards__carret');
 
         // And others attributes
-        index.setAttribute('style', `--theme:#${theme}`);
+        index.style.setProperty('--theme', "#" + theme);
         arrow_a.type = "button";
         arrow_b.type = "button";
         arrow_a.style.filter = filter;
@@ -140,6 +151,21 @@ class FlexCards {
         image_a.alt = "Toggle left";
         image_b.src = "../assets/icons/carret.svg";
         image_b.alt = "Toggle right";
+
+        if (timer) { // Create timer
+            let iterations = this.delay / this["refresh-time"] * 2;
+
+            timerDisplay.classList.add('flexcards__timer');
+            timerDisplay.style.setProperty('--theme', "#" + theme);
+            timerDisplay.style.transitionDuration = `${iterations}ms`;
+
+            container.append(timerDisplay);
+
+            // Animation function
+            setInterval(() => timerDisplay.style.setProperty('--percentage', (
+                this.timeElapsed / this.delay * 200
+            ).toString()), iterations);
+        }
 
         // Mount components
         this.container.classList.add("flexcards__wrapper");
@@ -189,9 +215,14 @@ class FlexCards {
             slide.setAttribute('data-id', key.toString());
         }, this);
 
+        // Get time elapsed
+        let adder = this.delay / this["refresh-time"];
+        this.getElapsed = setInterval(() => this.timeElapsed += adder, adder);
+
         return {
-            container, content, index,
             arrows: { left: arrow_a, right: arrow_b },
+            container, content, index,
+            timer: (timer ? timerDisplay : null),
         };
     }
 
@@ -205,8 +236,20 @@ class FlexCards {
         const components = this.mount(params || Object());
         this.container.classList.add('flexcards__carousel');
 
+        // Change slide when |scroll| >= 5%
+        function onScroll() {
+            let calc = 100 * (components.content.scrollLeft / components.content.clientWidth - 1);
+
+            // Change slide if >= 5%
+            if (calc >= 5) components.arrows.right.click();
+            else if (calc <= -5) components.arrows.left.click();
+        }
+
         // Render function
         function render(this: FlexCards, step: number = 0) {
+            // Re-init time elapsed
+            this.timeElapsed = 0;
+
             const updateContent = () => {
                 // put the animation in this function
                 components.content.querySelectorAll('article').forEach(el => {
@@ -223,9 +266,13 @@ class FlexCards {
 
                 components.content.scroll({ left: components.content.clientWidth });
                 this.slides[this.index].classList.add('animate');
+                components.content.addEventListener('scroll', onScroll);
+
+                if (components.timer) components.timer.style.setProperty('--percentage', '0');
             };
 
             if (Math.abs(step)) { // If step != 0 (have to scroll)
+                components.content.removeEventListener('scroll', onScroll);
                 components.content.scroll({
                     left: components.content.clientWidth * (1 + step),
                     behavior: 'smooth',
@@ -275,10 +322,16 @@ class FlexCards {
             arrow => arrow.onclick = e => onClick.call(this, e)
         );
 
+        // Seems strange, but removing this line, the code won't work properly :(
+        components.content.addEventListener('scroll', onScroll);
+
         // Return components and render a first time to complete setup.
         this.components = components;
         render.call(this);
     }
+
+    /** Stop */
+    public stop() { clearInterval(this.interval); }
 }
 
 class RGBtoHSL {
