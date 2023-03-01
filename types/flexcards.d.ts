@@ -11,9 +11,10 @@
  * @interface FlexCardsParams
  */
 interface FlexCardsParams {
-    theme?: string;
     component?: 'default' | 'images';
     indexType?: 'numbers' | 'points';
+    theme?: string;
+    timer?: boolean;
 }
 /**
  * Same as `document.createElement(element)`.
@@ -35,11 +36,17 @@ declare class FlexCards {
     /** @var length number of items */
     private length;
     /** @var "animation-time" */
-    "animation-time": number;
+    private readonly "animation-time";
+    /** @var "refresh-time" */
+    private "refresh-time";
     /** @var delay delay between toggling to the next item. */
     delay: number;
     /** @var index */
     index: number;
+    /** @var timeElapsed */
+    timeElapsed: number;
+    /** @var getElapsed */
+    private getElapsed;
     /** @var slides list of items */
     protected slides: Array<HTMLElement>;
     /** @var components dictionary of used components */
@@ -62,6 +69,8 @@ declare class FlexCards {
      * Display an amazing carousel for your items.
      */
     carousel(params?: FlexCardsParams): void;
+    /** Stop */
+    stop(): void;
 }
 declare class RGBtoHSL {
     private r;

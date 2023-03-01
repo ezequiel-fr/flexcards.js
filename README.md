@@ -5,11 +5,26 @@
 ## Summary :
 - [Usage](#usage)
 - [Functions](#functions)
+- [Variables](#variables)
 - [Functions parameters](#parameters)
 
 ## Functions
+- Controllers :
+    - `stop` - Just stop all animations.
 - Sliders :
     - `carousel` - A simple JavaScript Carousel
+
+## Variables
+Here, the liste of all variables returned by the creation of a new flexcards.js instance :
+- `components` : An object containing all components used by the instance called.
+- `container` : The HTMLElement used by the flexcards.js instance.
+- `delay` : The delay used between every changes.
+- `index` : The index of the current slide showed.
+- `length` : Count of all slides.
+- `refresh-time` : An index representing the refresh the instance made. The more greater the index,
+the more number of refresh.
+- `slides` : An array with all the slides.
+- `timeElapsed` : Time elapsed before last slide change.
 
 ## Usage
 After downloading the `flexcards.js` file, you can follow the tutorial bellow to use flexcards.js.
