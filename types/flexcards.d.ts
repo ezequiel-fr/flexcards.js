@@ -12,7 +12,7 @@
  */
 interface FlexCardsParams {
     component?: 'default' | 'images';
-    indexType?: 'numbers' | 'points';
+    indexType?: 'numbers' | 'dots';
     theme?: string;
     timer?: boolean;
 }
@@ -39,6 +39,8 @@ declare class FlexCards {
     private readonly "animation-time";
     /** @var "refresh-time" */
     private "refresh-time";
+    /** @var resourcesURI */
+    resourcesURI: string;
     /** @var delay delay between toggling to the next item. */
     delay: number;
     /** @var index */

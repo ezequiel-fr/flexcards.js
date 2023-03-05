@@ -1,7 +1,3 @@
-* {
-    scroll-behavior: smooth;
-}
-
 .flexcards__wrapper {
     position: relative !important;
     display: flex;
@@ -75,8 +71,6 @@
                     object-fit: cover;
                     user-select: none;
                 }
-
-                // animation
             }
 
             &::-webkit-scrollbar {
@@ -99,9 +93,10 @@
 
             .flexcards__carret {
                 position: relative;
-                width: 70%;
+                width: 21px;
                 object-fit: contain;
                 pointer-events: none;
+                display: block;
             }
 
             &.left {
@@ -131,7 +126,7 @@
         z-index: 2;
         color: var(--theme);
 
-        .flexcards__point {
+        .flexcards__dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;

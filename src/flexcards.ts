@@ -15,7 +15,7 @@
 
 interface FlexCardsParams {
     component?: 'default' | 'images';
-    indexType?: 'numbers' | 'points';
+    indexType?: 'numbers' | 'dots';
     theme?: string;
     timer?: boolean;
 };
@@ -61,6 +61,9 @@ class FlexCards {
     /** @var "refresh-time" */
     private "refresh-time" = 250;
 
+    /** @var resourcesURI */
+    public resourcesURI: string;
+
     /** @var delay delay between toggling to the next item. */
     public delay = 6000;
 
@@ -93,6 +96,27 @@ class FlexCards {
 
     constructor (element: string) {
         this.container = querySelector(element) as HTMLDivElement;
+
+        // Check resources URI
+        let scriptTag = document.getElementById('flexcardsjs-script'),
+            current = window.location.origin + "/";
+
+        if (scriptTag)
+            this.resourcesURI = scriptTag.getAttribute('data-host') || current;
+        else this.resourcesURI = current;
+
+        // Set associated StyleSheet
+        let cssExists = document.getElementById('flexcardsjs-stylesheet');
+
+        if (!cssExists) {
+            let el = createElement<HTMLLinkElement>('link');
+
+            el.id = "flexcardsjs-stylesheet";
+            el.rel = "stylesheet";
+            el.href = this.resourcesURI + "/flexcards.js/assets/styles/index.min.css";
+
+            window.document.head.appendChild(el);
+        }
     }
 
     /**
@@ -102,7 +126,7 @@ class FlexCards {
 
     private mount({
         component = "default",
-        indexType = "points",
+        indexType = "dots",
         theme = "#666",
         timer = false,
     }: FlexCardsParams) {
@@ -147,9 +171,9 @@ class FlexCards {
         arrow_b.type = "button";
         arrow_a.style.filter = filter;
         arrow_b.style.filter = filter;
-        image_a.src = "../assets/icons/carret.svg";
+        image_a.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_a.alt = "Toggle left";
-        image_b.src = "../assets/icons/carret.svg";
+        image_b.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_b.alt = "Toggle right";
 
         if (timer) { // Create timer
@@ -190,10 +214,10 @@ class FlexCards {
         }
 
         this.slides.forEach((slide, key) => {
-            // Indexing points
-            if (indexType === 'points') {
+            // Indexing dots
+            if (indexType === 'dots') {
                 let circle = createElement('span');
-                circle.classList.add('flexcards__point');
+                circle.classList.add('flexcards__dot');
                 if (!key) circle.classList.add('current');
 
                 circle.onclick = () => (function (this: FlexCards) {
