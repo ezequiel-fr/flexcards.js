@@ -64,12 +64,27 @@ class FlexCards {
         /** @var interval the interval used to automate the scroll */
         this.interval = setInterval(() => void 0, this.delay);
         this.container = querySelector(element);
+        // Check resources URI
+        let scriptTag = document.getElementById('flexcardsjs-script'), current = window.location.origin + "/";
+        if (scriptTag)
+            this.resourcesURI = scriptTag.getAttribute('data-host') || current;
+        else
+            this.resourcesURI = current;
+        // Set associated StyleSheet
+        let cssExists = document.getElementById('flexcardsjs-stylesheet');
+        if (!cssExists) {
+            let el = createElement('link');
+            el.id = "flexcardsjs-stylesheet";
+            el.rel = "stylesheet";
+            el.href = this.resourcesURI + "/flexcards.js/assets/styles/index.min.css";
+            window.document.head.appendChild(el);
+        }
     }
     /**
      * Set up the necessary components.
      * @returns generated components.
      */
-    mount({ component = "default", indexType = "points", theme = "#666", timer = false, }) {
+    mount({ component = "default", indexType = "dots", theme = "#666", timer = false, }) {
         // Get slides and set length attr
         this.slides = Array.from(this.container.querySelectorAll(component === 'default' ? 'article' : 'img'));
         this.length = this.slides.length;
@@ -96,9 +111,9 @@ class FlexCards {
         arrow_b.type = "button";
         arrow_a.style.filter = filter;
         arrow_b.style.filter = filter;
-        image_a.src = "../assets/icons/carret.svg";
+        image_a.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_a.alt = "Toggle left";
-        image_b.src = "../assets/icons/carret.svg";
+        image_b.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_b.alt = "Toggle right";
         if (timer) { // Create timer
             let iterations = this.delay / this["refresh-time"] * 2;
@@ -126,10 +141,10 @@ class FlexCards {
             index.append(current, '/', limit);
         }
         this.slides.forEach((slide, key) => {
-            // Indexing points
-            if (indexType === 'points') {
+            // Indexing dots
+            if (indexType === 'dots') {
                 let circle = createElement('span');
-                circle.classList.add('flexcards__point');
+                circle.classList.add('flexcards__dot');
                 if (!key)
                     circle.classList.add('current');
                 circle.onclick = () => (function () {

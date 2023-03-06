@@ -1,0 +1,25 @@
+{
+  "name": "flexcardsjs-react",
+  "version": "1.0.0",
+  "description": "flexcards.js",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRedMineTheRedMine/flexcards.js.git"
+  },
+  "keywords": [
+    "flexcards.js",
+    "react",
+    "html",
+    "css",
+    "web3"
+  ],
+  "author": "TheRedMineTheRedMine",
+  "license": "The Unlicense",
+  "types": "./index.d.ts",
+  "bugs": {
+    "url": "https://github.com/TheRedMineTheRedMine/flexcards.js/issues"
+  },
+  "homepage": "https://github.com/TheRedMineTheRedMine/flexcards.js#readme"
+}
