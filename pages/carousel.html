@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 
-    <title>Document</title>
+    <title>flexcards.js - Carousel</title>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../assets/styles/index.css">
+    <script src="../dist/flexcards.js"></script>
 
     <style>
         * {
@@ -16,29 +19,22 @@
             font-family: sans-serif;
         }
 
-        body {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
-        }
-
         #flexcards {
-            margin: 1em 0;
-            width: calc(50vw - 2em);
+            margin: 1em;
+            width: 800px;
             height: 450px;
             border: 1px solid #000;
         }
 
-        .basic article { padding: 3em }
+        #flexcards article {
+            padding: 1em;
+        }
     </style>
-
-    <script src="../dist/flexcards.js"></script>
 
 </head>
 <body>
 
-    <div id="flexcards" class="basic">
+    <div id="flexcards">
         <article>
             <h1>First lorem :</h1>
 
@@ -80,23 +76,9 @@
         </article>
     </div>
 
-    <div id="flexcards" class="images">
-        <img src="../assets/images/landscape1.jpeg" alt="Landscape">
-        <img src="../assets/images/landscape2.jpg" alt="Landscape">
-        <img src="../assets/images/landscape3.jpg" alt="Landscape">
-    </div>
-
     <script>
-        const flexcard = new FlexCards("#flexcards");
-        const flexcard2 = new FlexCards("#flexcards.images");
-
-        flexcard.carousel();
-        flexcard2.carousel({
-            component: 'images',
-            indexType: 'numbers',
-            theme: '#ae58f4',
-            timer: true,
-        });
+        const flexcards = new FlexCards("#flexcards");
+        flexcards.carousel();
     </script>
 
 </body>
