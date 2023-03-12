@@ -8,7 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../assets/styles/index.css">
     <script src="../dist/flexcards.js"></script>
 
     <style>
@@ -19,22 +18,27 @@
             font-family: sans-serif;
         }
 
+        body {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-evenly;
+        }
+
         #flexcards {
             margin: 1em;
-            width: 800px;
-            height: 450px;
+            min-width: 200px;
+            width: calc(50vw - 3em);
+            height: calc(calc(50vw - 2em) * 9 / 16);
             border: 1px solid #000;
         }
 
-        #flexcards article {
-            padding: 1em;
-        }
+        .basic article { padding: 2em }
     </style>
 
 </head>
 <body>
 
-    <div id="flexcards">
+    <div id="flexcards" class="basic">
         <article>
             <h1>First lorem :</h1>
 
@@ -76,9 +80,24 @@
         </article>
     </div>
 
+    <div id="flexcards" class="images">
+        <img src="../assets/images/landscape1.jpeg" alt="Landscape">
+        <img src="../assets/images/landscape2.jpg" alt="Landscape">
+        <img src="../assets/images/landscape3.jpg" alt="Landscape">
+    </div>
+
     <script>
-        const flexcards = new FlexCards("#flexcards");
-        flexcards.carousel({ indexType: "dots" });
+        const flexcards = new FlexCards("#flexcards.basic");
+        const flexcards2 = new FlexCards("#flexcards.images", { components: "images" });
+
+        flexcards.carousel();
+        flexcards2.carousel({
+            arrowUrl: "https://cdn-icons-png.flaticon.com/256/1634/1634158.png",
+            colorized: false,
+            indexType: "numbers",
+            theme: "#0ff",
+            timer: false,
+        });
     </script>
 
 </body>

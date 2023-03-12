@@ -1,6 +1,18 @@
+interface FlexCardsComponents {
+    container: HTMLDivElement;
+    content: HTMLDivElement;
+    index: HTMLDivElement;
+    timer?: HTMLSpanElement;
+}
+declare type FlexCardsOptions = {
+    components: "default" | "images";
+};
 interface FlexCardsParams extends Object {
+    arrowUrl?: string;
+    colorized?: boolean;
     indexType?: "dots" | "numbers";
     theme?: string;
+    timer?: boolean;
 }
 declare const setClass: (token: string) => string;
 /**
@@ -13,7 +25,7 @@ declare const setClass: (token: string) => string;
  */
 declare class FlexCards {
     /** @var components */
-    components: Record<('container' | 'content' | 'index' | (string & {})), HTMLElement>;
+    components: FlexCardsComponents;
     /** @var container the HTML conainer used to render the current `flexcards.js` instance */
     container: HTMLDivElement;
     /** @var delay */
@@ -22,18 +34,21 @@ declare class FlexCards {
     protected index: number;
     /** @var interval */
     protected interval: number;
+    /** @var "refresh-time" */
+    "refresh-time": number;
     /** @var length */
     readonly length: number;
     /** @var slides */
-    slides: HTMLElement[];
+    slides: (HTMLElement | HTMLImageElement)[];
     /** @var timeElapsed */
     timeElapsed: number;
     /**
      * Permits creating a new FlexCards instance.
      * @param element the JavaScript element selector.
      */
-    constructor(element: string);
+    constructor(element: string, options?: FlexCardsOptions);
     carousel(params?: FlexCardsParams): void;
+    stop(): void;
 }
 declare class RGBtoHSL {
     private r;

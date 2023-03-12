@@ -13,13 +13,15 @@ class FlexCards {
      * Permits creating a new FlexCards instance.
      * @param element the JavaScript element selector.
      */
-    constructor(element) {
+    constructor(element, options = { components: "default" }) {
         /** @var delay */
         this.delay = 6e3;
         /** @var index */
         this.index = 0;
         /** @var interval */
         this.interval = setInterval(() => void 0, this.delay);
+        /** @var "refresh-time" */
+        this["refresh-time"] = 250;
         /** @var timeElapsed */
         this.timeElapsed = 0;
         // Set up main element that will be used.
@@ -35,8 +37,55 @@ class FlexCards {
             this.container = document.createElement('div');
         }
         // Set up main StyleSheet
+        const css = document.createElement('link');
+        css.rel = "stylesheet";
+        css.type = "text/css";
+        css.href = URL.createObjectURL(new Blob([
+            '.flexcards__wrapper{position:relative!important;display:flex;flex-flow:column nowrap',
+            ';align-items:center;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
+            '.flexcards__wrapper .flexcards__container{display:flex;justify-content:center;align-',
+            'items:center;position:relative;overflow:hidden;height:100%;width:100%}.flexcards__wr',
+            'apper .flexcards__container .flexcards__timer{display:block;position:absolute;width:',
+            '100%;height:5px;z-index:2;top:0}.flexcards__wrapper .flexcards__container .flexcards',
+            '__timer::after,.flexcards__wrapper .flexcards__container .flexcards__timer::before{c',
+            'ontent:"";display:block;position:absolute;height:5px;z-index:2;top:0;background:var(',
+            '--theme)}.flexcards__wrapper .flexcards__container .flexcards__timer::before{width:1',
+            '00%;opacity:.4}.flexcards__wrapper .flexcards__container .flexcards__timer::after{tr',
+            'ansition:all linear;width:calc(var(--percentage) * .5%);opacity:.75}.flexcards__wrap',
+            'per .flexcards__container .flexcards__content{display:flex;width:100%;height:100%;z-',
+            'index:1;overflow:scroll hidden;scroll-behavior:auto}.flexcards__wrapper .flexcards__',
+            'container .flexcards__content .flexcards__card{position:relative;min-width:100%;widt',
+            'h:100%;height:100%;overflow:hidden;-webkit-user-select:inherit;-moz-user-select:inhe',
+            'rit;user-select:inherit}.flexcards__wrapper .flexcards__container .flexcards__conten',
+            't .flexcards__card.flexcards__image{display:flex;flex-direction:column;justify-conte',
+            'nt:center;align-items:center;-o-object-fit:cover;object-fit:cover;-webkit-user-selec',
+            't:none;-moz-user-select:none;user-select:none}.flexcards__wrapper .flexcards__contai',
+            'ner .flexcards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;d',
+            'isplay:none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position:abs',
+            'olute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline:0;borde',
+            'r:none;transform:none;transition:all .2s ease;display:flex;flex-direction:column;ali',
+            'gn-items:center;justify-content:center}.flexcards__wrapper .flexcards__container .fl',
+            'excards__arrow .flexcards__carret{position:relative;width:21px;-o-object-fit:contain',
+            ';object-fit:contain;pointer-events:none;display:block}.flexcards__wrapper .flexcards',
+            '__container .flexcards__arrow.left{left:0}.flexcards__wrapper .flexcards__container ',
+            '.flexcards__arrow.left img{transform:rotate(.5turn)}.flexcards__wrapper .flexcards__',
+            'container .flexcards__arrow.right{right:0}.flexcards__wrapper .flexcards__container ',
+            '.flexcards__arrow:focus,.flexcards__wrapper .flexcards__container .flexcards__arrow:',
+            'hover{transform:scale(107%)}.flexcards__wrapper .flexcards__index{display:flex;justi',
+            'fy-content:center;align-items:center;position:absolute;height:20px;min-width:29px;pa',
+            'dding:1px 5px;bottom:5px;gap:5px;z-index:2;color:var(--theme)}.flexcards__wrapper .f',
+            'lexcards__index .flexcards__dot{width:12px;height:12px;border-radius:60%;background:',
+            'var(--theme);transition:all .2s;cursor:pointer;opacity:.4}.flexcards__wrapper .flexc',
+            'ards__index .flexcards__dot:hover{opacity:65%}.flexcards__wrapper .flexcards__index ',
+            '.flexcards__dot.current{opacity:75%}.flexcards__wrapper .flexcards__index .flexcards',
+            '__count,.flexcards__wrapper .flexcards__index .flexcards__limit{pointer-events:none}',
+        ], { type: "text/css" }));
+        document.head.appendChild(css);
+        // Get time elapsed
+        let adder = this.delay / this["refresh-time"];
+        setInterval(() => this.timeElapsed += adder, adder);
         // Set bases
-        this.slides = Array.from(this.container.querySelectorAll('article'));
+        this.slides = Array.from(this.container.querySelectorAll(options.components === "default" ? "article" : "img"));
         this.length = this.slides.length;
         this.container.classList.add(setClass('wrapper'));
         let container = document.createElement("div"), content = document.createElement("div"), index = document.createElement("div");
@@ -52,12 +101,15 @@ class FlexCards {
             content.appendChild(slide);
             slide.classList.add(setClass('card'));
             slide.setAttribute('data-id', key.toString());
+            options.components === "images" && slide.classList.add(setClass('image'));
         });
         this.components = { container, content, index };
     }
     carousel(params = {
+        colorized: true,
         indexType: "dots",
         theme: "#444",
+        timer: true,
     }) {
         const { container, content, index } = this.components;
         // Get new slides order
@@ -85,22 +137,48 @@ class FlexCards {
         arrow_b.type = "button";
         image_a.alt = "Toggle left";
         image_b.alt = "Toggle right";
-        image_a.src = "../assets/icons/carret.svg";
-        image_b.src = "../assets/icons/carret.svg";
         arrow_a.appendChild(image_a);
         arrow_b.appendChild(image_b);
         container.insertBefore(arrow_a, content);
         container.appendChild(arrow_b);
+        // Set image content
+        if (params.arrowUrl) {
+            image_a.src = params.arrowUrl;
+            image_b.src = params.arrowUrl;
+        }
+        else {
+            let imageUrl = URL.createObjectURL(new Blob([
+                '<svg width="54px" height="116px" xmlns="http://www.w3.org/2000/svg">',
+                '<path d="M8 8,l38 48,L8 108" fill="transparent" stroke="#000" stroke-width="15" ',
+                'stroke-linejoin="round" stroke-linecap="round" /></svg>'
+            ], { type: "image/svg+xml" }));
+            image_a.src = imageUrl;
+            image_b.src = imageUrl;
+        }
         // Set theme
         let theme = params.theme || "#444";
         theme = theme.replace('#', '');
         theme = theme.replace(/^([a-f\d])([a-f\d])([a-f\d])$/i, (_, r, g, b) => r + r + g + g + b + b);
-        const result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
-        let rgb = result // Hex to Dec
-            ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-            : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
-        arrow_a.style.filter = filter;
-        arrow_b.style.filter = filter;
+        if (!params.hasOwnProperty('colorized') || params.colorized) {
+            const result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
+            let rgb = result // Hex to Dec
+                ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+                : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
+            arrow_a.style.filter = filter;
+            arrow_b.style.filter = filter;
+        }
+        // Set timer
+        if (!params.hasOwnProperty('theme') || params.colorized) {
+            const timerDisplay = document.createElement('span');
+            let iterations = this.delay / this["refresh-time"] * 2;
+            timerDisplay.classList.add(setClass('timer'));
+            timerDisplay.style.setProperty('--theme', "#" + theme);
+            timerDisplay.style.transitionDuration = iterations + "ms";
+            container.insertBefore(timerDisplay, arrow_a);
+            this.components.timer = timerDisplay;
+            // Animation function
+            setInterval(() => timerDisplay.style.setProperty('--percentage', (this.timeElapsed / this.delay * 200).toString()), iterations);
+        }
         index.style.setProperty('--theme', "#" + theme);
         // Set index
         if (params.hasOwnProperty('indexType')) {
@@ -140,6 +218,7 @@ class FlexCards {
                 this.index = 0;
             // Scroll and then change order
             let order = getOrder(step);
+            content.removeEventListener('scroll', onScroll);
             content.scroll({
                 left: content.clientWidth * (scrollStep + step),
                 behavior: 'smooth',
@@ -147,6 +226,7 @@ class FlexCards {
             setTimeout(() => {
                 setSlides(order);
                 content.scroll({ left: content.clientWidth * scrollStep, behavior: 'auto' });
+                content.addEventListener('scroll', onScroll);
             }, 600);
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
@@ -159,10 +239,20 @@ class FlexCards {
             render.call(this, Number(arrow.classList.contains('left')) * -2 + 1);
             arrow.blur();
         }
+        function onScroll() {
+            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1;
+            calc = Math.round(calc * 100);
+            if (Math.abs(calc) >= 4)
+                (Math.sign(calc) + 1 ? arrow_b : arrow_a).click();
+        }
+        // onclick function (arrows)
         [arrow_a, arrow_b].forEach(arrow => arrow.onclick = e => onArrowClick.call(this, e));
+        // Scroll event fix
+        content.addEventListener('scroll', onScroll);
         // First render
         render.call(this);
     }
+    stop() { clearInterval(this.interval); }
 }
 class RGBtoHSL {
     constructor(r, g, b) {
@@ -328,9 +418,9 @@ class RGBtoHSL {
             + Math.abs(color.b - this.target.b) + Math.abs(colorHSL.l - this.targetHSL.l);
     }
     toString(filters) {
-        const fmt = (idx, multiplier = 1) => Math.round(filters[idx] * multiplier);
-        return `invert(${fmt(0)}%) ` + `sepia(${fmt(1)}%) `
-            + `saturate(${fmt(2)}%) ` + `hue-rotate(${fmt(3, 3.6)}deg) `
-            + `brightness(${fmt(4)}%) ` + `contrast(${fmt(5)}%)`;
+        const format = (idx, multiplier = 1) => Math.round(filters[idx] * multiplier);
+        return `invert(${format(0)}%) ` + `sepia(${format(1)}%) `
+            + `saturate(${format(2)}%) ` + `hue-rotate(${format(3, 3.6)}deg) `
+            + `brightness(${format(4)}%) ` + `contrast(${format(5)}%)`;
     }
 }
