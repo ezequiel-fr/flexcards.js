@@ -83,5 +83,20 @@
         gap: 5px;
         z-index: 2;
         color: var(--theme);
+
+        .flexcards__dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 60%;
+            background: var(--theme);
+            transition: all .2s;
+            cursor: pointer;
+            opacity: .4;
+
+            &:hover { opacity: 65% }
+            &.current { opacity: 75% }
+        }
+
+        .flexcards__count, .flexcards__limit { pointer-events: none }
     }
 }

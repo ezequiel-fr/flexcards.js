@@ -87,4 +87,22 @@
   gap: 5px;
   z-index: 2;
   color: var(--theme);
+}
+.flexcards__wrapper .flexcards__index .flexcards__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 60%;
+  background: var(--theme);
+  transition: all 0.2s;
+  cursor: pointer;
+  opacity: 0.4;
+}
+.flexcards__wrapper .flexcards__index .flexcards__dot:hover {
+  opacity: 65%;
+}
+.flexcards__wrapper .flexcards__index .flexcards__dot.current {
+  opacity: 75%;
+}
+.flexcards__wrapper .flexcards__index .flexcards__count, .flexcards__wrapper .flexcards__index .flexcards__limit {
+  pointer-events: none;
 }/*# sourceMappingURL=index.css.map */

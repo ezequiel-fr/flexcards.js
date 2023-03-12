@@ -1,3 +1,7 @@
+interface FlexCardsParams extends Object {
+    indexType?: "dots" | "numbers";
+    theme?: string;
+}
 declare const setClass: (token: string) => string;
 /**
  * flexcards.js - A powerful JavaScript library to make your website better.
@@ -29,5 +33,29 @@ declare class FlexCards {
      * @param element the JavaScript element selector.
      */
     constructor(element: string);
-    carousel(): void;
+    carousel(params?: FlexCardsParams): void;
+}
+declare class RGBtoHSL {
+    private r;
+    private g;
+    private b;
+    private target;
+    private targetHSL;
+    constructor(r: number, g: number, b: number);
+    private clamp;
+    private multiply;
+    private hueRotate;
+    private sepia;
+    private saturate;
+    private brightness;
+    private contrast;
+    private linear;
+    private invert;
+    private hsl;
+    solve(): string;
+    private solveWide;
+    private solveNarrow;
+    private spsa;
+    private loss;
+    private toString;
 }
