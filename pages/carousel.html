@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 
-    <title>Document</title>
+    <title>flexcards.js - Carousel</title>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="../dist/flexcards.js"></script>
 
     <style>
         * {
@@ -18,22 +20,20 @@
 
         body {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
+            flex-flow: row wrap;
             justify-content: space-evenly;
         }
 
         #flexcards {
-            margin: 1em 0;
-            width: calc(50vw - 2em);
-            height: 450px;
+            margin: 1em;
+            min-width: 200px;
+            width: calc(50vw - 3em);
+            height: calc(calc(50vw - 2em) * 9 / 16);
             border: 1px solid #000;
         }
 
-        .basic article { padding: 3em }
+        .basic article { padding: 2em }
     </style>
-
-    <script src="../dist/flexcards.js"></script>
 
 </head>
 <body>
@@ -87,15 +87,16 @@
     </div>
 
     <script>
-        const flexcard = new FlexCards("#flexcards");
-        const flexcard2 = new FlexCards("#flexcards.images");
+        const flexcards = new FlexCards("#flexcards.basic");
+        const flexcards2 = new FlexCards("#flexcards.images", { components: "images" });
 
-        flexcard.carousel();
-        flexcard2.carousel({
-            component: 'images',
-            indexType: 'numbers',
-            theme: '#ae58f4',
-            timer: true,
+        flexcards.carousel();
+        flexcards2.carousel({
+            arrowUrl: "https://cdn-icons-png.flaticon.com/256/1634/1634158.png",
+            colorized: false,
+            indexType: "numbers",
+            theme: "#0ff",
+            timer: false,
         });
     </script>
 

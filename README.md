@@ -4,15 +4,17 @@
 
 ## Summary :
 - [Usage](#usage)
-- [Functions](#functions)
+- [Functions and demo](#functions)
 - [Variables](#variables)
 - [Functions parameters](#parameters)
+- [Thanks](#thanks)
 
 ## Functions
 - Controllers :
     - `stop` - Just stop all animations.
 - Sliders :
-    - `carousel` - A simple JavaScript Carousel
+    - `carousel` - A simple
+    [carousel](https://theredminetheredmine.github.io/flexcards.js/pages/carousel.html)
 
 ## Variables
 Here, the liste of all variables returned by the creation of a new flexcards.js instance :
@@ -27,14 +29,15 @@ the more number of refresh.
 - `timeElapsed` : Time elapsed before last slide change.
 
 ## Usage
-After downloading the `flexcards.js` file, you can follow the tutorial bellow to use flexcards.js.
+After downloading the [flexcards.js](./dist/flexcards.min.js) file, you can follow the tutorial
+bellow to use flexcards.js.
 <br /> For more informations about the functions used, go to [function](#functions) category.
 
 ### In HTML
 - In your HTML file, just put the link to the JS file :
 ```html
 <!-- In the header -->
-<script src="flexcards.js"></script>
+<script src="./flexcards.min.js"></script>
 
 <!-- Your component -->
 <div id="flexcards">
@@ -64,11 +67,33 @@ flexcards.carousel({ theme: '#f00' });
 ```
 
 ## Parameters
-Parameters can be added in JSON format in the function called by the flexcards.js instance. Here
-you'll found, the list of all the parameters and the values you can put. To see how it works to
-used the parameters, check [this](#adding-parameters) link.
-- `component` : `default` will use the `article` tags and `images` will use `<img>` tags.
-- `indexType` : `points` by default will display some carret points at the bottom of the box and
-`number` will display the current page number.
+Parameters can be added in JSON format in the function called thanks to the flexcards.js instance.
+Here you'll found, the list of all the parameters and the values you can put. To see how it works
+to used the parameters, check [this](#adding-parameters) link.
+
+- `arrowUrl` : if a string is provided, will use the path of the image to use.
+
+- `colorized` : default `true`, apply a filter to the arrow (work better on black images) to have
+a color that matches the theme. To see how the [RGBtoHSL](#rgbtohsl) object work to apply a filter
+converting an RGB color provided into an HSL color, click on the link in the [thanks](#thanks)
+section.
+
+- `component` : `default` will use the `article` tags and `images` will use `<img>` tags. This
+parameter is an **exception** and must be added next the selector (JSON Format) when the new
+instance is created.
+
+- `indexType` \<dots | numbers | undefined\> : `dots` by default will display some dots at the
+bottom of the box that can be used to navigate. `numbers` will display a classic index with the
+current slide number. If any of these parameter are defined, there will be nothing.
+
 - `theme` : An hexadecimal color code (like in CSS) of 3 or 6 digits that will be applied to the
-components provided by flexcards.js (default: #666).
+components provided by flexcards.js (default: #444).
+
+- `timer` : by default to `true`, this attribute will indicate wether a progress bar should be
+displayed at the top of the flexcards.js instance or not.
+
+## Thanks
+### RGBtoHSL
+I just customize the code found this
+[StackOverflow subject](https://stackoverflow.com/a/42966641/604861). So all credits goes to the
+posts on this subject and especially to MultiplyByZer0.

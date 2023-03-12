@@ -1,263 +1,257 @@
 "use strict";
+const setClass = (token) => "flexcards__" + token;
 /**
- * flexcards.js
+ * flexcards.js - A powerful JavaScript library to make your website better.
  *
  * @see https://github.com/TheRedMineTheRedMine/flexcards.js
  * @author TheRedMineTheRedMine <theredminedu51@gmail.com>
  * @copyright 2023 - 2024
  * @license TheUnlicense
  */
-;
-/**
- * Same as `document.createElement(element)`.
- *
- * @param element element to be created
- * @returns an HTML element
- */
-function createElement(element) {
-    return window.document.createElement(element, { is: undefined });
-}
-/**
- * Returns the first element that is a descendant of node that matches selectors. Otherwise return
- * a default element (by default a `div` element).
- *
- * @param element selector.
- * @param defaultElement default element created if not exists.
- * @returns HTML element.
- */
-function querySelector(element, defaultElement = "div") {
-    try {
-        let el = document.querySelector(element);
-        if (el)
-            return el;
-        else
-            throw '';
-    }
-    catch (err) {
-        return createElement(defaultElement);
-    }
-}
 class FlexCards {
     /**
-     * New flexbox.js instance.
-     * @param element HTML selector.
+     * Permits creating a new FlexCards instance.
+     * @param element the JavaScript element selector.
      */
-    constructor(element) {
-        /** @var length number of items */
-        this.length = 0;
-        /** @var "animation-time" */
-        this["animation-time"] = 550;
-        /** @var "refresh-time" */
-        this["refresh-time"] = 250;
-        /** @var delay delay between toggling to the next item. */
-        this.delay = 6000;
+    constructor(element, options = { components: "default" }) {
+        /** @var delay */
+        this.delay = 6e3;
         /** @var index */
         this.index = 0;
+        /** @var interval */
+        this.interval = setInterval(() => void 0, this.delay);
+        /** @var "refresh-time" */
+        this["refresh-time"] = 250;
         /** @var timeElapsed */
         this.timeElapsed = 0;
-        /** @var getElapsed */
-        this.getElapsed = setInterval(() => void 0, this.delay);
-        /** @var slides list of items */
-        this.slides = [];
-        /** @var components dictionary of used components */
-        this.components = Object();
-        /** @var interval the interval used to automate the scroll */
-        this.interval = setInterval(() => void 0, this.delay);
-        this.container = querySelector(element);
-        // Check resources URI
-        let scriptTag = document.getElementById('flexcardsjs-script'), current = window.location.origin + "/";
-        if (scriptTag)
-            this.resourcesURI = scriptTag.getAttribute('data-host') || current;
-        else
-            this.resourcesURI = current;
-        // Set associated StyleSheet
-        let cssExists = document.getElementById('flexcardsjs-stylesheet');
-        if (!cssExists) {
-            let el = createElement('link');
-            el.id = "flexcardsjs-stylesheet";
-            el.rel = "stylesheet";
-            el.href = this.resourcesURI + "/flexcards.js/assets/styles/index.min.css";
-            window.document.head.appendChild(el);
+        // Set up main element that will be used.
+        try {
+            let elExists = document.querySelector(element);
+            if (elExists)
+                this.container = elExists;
+            else
+                throw '';
         }
-    }
-    /**
-     * Set up the necessary components.
-     * @returns generated components.
-     */
-    mount({ component = "default", indexType = "dots", theme = "#666", timer = false, }) {
-        // Get slides and set length attr
-        this.slides = Array.from(this.container.querySelectorAll(component === 'default' ? 'article' : 'img'));
+        catch (error) {
+            console.warn("The provided selector doesn't exists.");
+            this.container = document.createElement('div');
+        }
+        // Set up main StyleSheet
+        const css = document.createElement('link');
+        css.rel = "stylesheet";
+        css.type = "text/css";
+        css.href = URL.createObjectURL(new Blob([
+            '.flexcards__wrapper{position:relative!important;display:flex;flex-flow:column nowrap',
+            ';align-items:center;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
+            '.flexcards__wrapper .flexcards__container{display:flex;justify-content:center;align-',
+            'items:center;position:relative;overflow:hidden;height:100%;width:100%}.flexcards__wr',
+            'apper .flexcards__container .flexcards__timer{display:block;position:absolute;width:',
+            '100%;height:5px;z-index:2;top:0}.flexcards__wrapper .flexcards__container .flexcards',
+            '__timer::after,.flexcards__wrapper .flexcards__container .flexcards__timer::before{c',
+            'ontent:"";display:block;position:absolute;height:5px;z-index:2;top:0;background:var(',
+            '--theme)}.flexcards__wrapper .flexcards__container .flexcards__timer::before{width:1',
+            '00%;opacity:.4}.flexcards__wrapper .flexcards__container .flexcards__timer::after{tr',
+            'ansition:all linear;width:calc(var(--percentage) * .5%);opacity:.75}.flexcards__wrap',
+            'per .flexcards__container .flexcards__content{display:flex;width:100%;height:100%;z-',
+            'index:1;overflow:scroll hidden;scroll-behavior:auto}.flexcards__wrapper .flexcards__',
+            'container .flexcards__content .flexcards__card{position:relative;min-width:100%;widt',
+            'h:100%;height:100%;overflow:hidden;-webkit-user-select:inherit;-moz-user-select:inhe',
+            'rit;user-select:inherit}.flexcards__wrapper .flexcards__container .flexcards__conten',
+            't .flexcards__card.flexcards__image{display:flex;flex-direction:column;justify-conte',
+            'nt:center;align-items:center;-o-object-fit:cover;object-fit:cover;-webkit-user-selec',
+            't:none;-moz-user-select:none;user-select:none}.flexcards__wrapper .flexcards__contai',
+            'ner .flexcards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;d',
+            'isplay:none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position:abs',
+            'olute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline:0;borde',
+            'r:none;transform:none;transition:all .2s ease;display:flex;flex-direction:column;ali',
+            'gn-items:center;justify-content:center}.flexcards__wrapper .flexcards__container .fl',
+            'excards__arrow .flexcards__carret{position:relative;width:21px;-o-object-fit:contain',
+            ';object-fit:contain;pointer-events:none;display:block}.flexcards__wrapper .flexcards',
+            '__container .flexcards__arrow.left{left:0}.flexcards__wrapper .flexcards__container ',
+            '.flexcards__arrow.left img{transform:rotate(.5turn)}.flexcards__wrapper .flexcards__',
+            'container .flexcards__arrow.right{right:0}.flexcards__wrapper .flexcards__container ',
+            '.flexcards__arrow:focus,.flexcards__wrapper .flexcards__container .flexcards__arrow:',
+            'hover{transform:scale(107%)}.flexcards__wrapper .flexcards__index{display:flex;justi',
+            'fy-content:center;align-items:center;position:absolute;height:20px;min-width:29px;pa',
+            'dding:1px 5px;bottom:5px;gap:5px;z-index:2;color:var(--theme)}.flexcards__wrapper .f',
+            'lexcards__index .flexcards__dot{width:12px;height:12px;border-radius:60%;background:',
+            'var(--theme);transition:all .2s;cursor:pointer;opacity:.4}.flexcards__wrapper .flexc',
+            'ards__index .flexcards__dot:hover{opacity:65%}.flexcards__wrapper .flexcards__index ',
+            '.flexcards__dot.current{opacity:75%}.flexcards__wrapper .flexcards__index .flexcards',
+            '__count,.flexcards__wrapper .flexcards__index .flexcards__limit{pointer-events:none}',
+        ], { type: "text/css" }));
+        document.head.appendChild(css);
+        // Get time elapsed
+        let adder = this.delay / this["refresh-time"];
+        setInterval(() => this.timeElapsed += adder, adder);
+        // Set bases
+        this.slides = Array.from(this.container.querySelectorAll(options.components === "default" ? "article" : "img"));
         this.length = this.slides.length;
-        // Get color theme
-        theme = theme.replace('#', '');
-        theme = theme.replace(/^([a-f\d])([a-f\d])([a-f\d])$/i, (_m, r, g, b) => r + r + g + g + b + b);
-        const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
-        let rgb = result // Parse numbers from hexadecimal to decimal
-            ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-            : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
-        // Create components
-        let container = createElement('div'), content = createElement('div'), index = createElement('div'), arrow_a = createElement('button'), arrow_b = createElement('button'), image_a = createElement('img'), image_b = createElement('img'), timerDisplay = createElement('span');
-        // Add classes
-        container.classList.add('flexcards__container');
-        content.classList.add('flexcards__content');
-        index.classList.add('flexcards__index');
-        arrow_a.classList.add('flexcards__arrow', 'left');
-        arrow_b.classList.add('flexcards__arrow', 'right');
-        image_a.classList.add('flexcards__carret');
-        image_b.classList.add('flexcards__carret');
-        // And others attributes
-        index.style.setProperty('--theme', "#" + theme);
+        this.container.classList.add(setClass('wrapper'));
+        let container = document.createElement("div"), content = document.createElement("div"), index = document.createElement("div");
+        container.classList.add(setClass('container'));
+        content.classList.add(setClass('content'));
+        index.classList.add(setClass('index'));
+        // Mount components
+        this.container.textContent = "";
+        this.container.append(container, index);
+        container.append(content);
+        // Add slides in the content box
+        this.slides.forEach((slide, key) => {
+            content.appendChild(slide);
+            slide.classList.add(setClass('card'));
+            slide.setAttribute('data-id', key.toString());
+            options.components === "images" && slide.classList.add(setClass('image'));
+        });
+        this.components = { container, content, index };
+    }
+    carousel(params = {
+        colorized: true,
+        indexType: "dots",
+        theme: "#444",
+        timer: true,
+    }) {
+        const { container, content, index } = this.components;
+        // Get new slides order
+        const getOrder = (step = 1) => {
+            step = -(step % this.length);
+            return this.slides.map((_a, b) => this.slides[b + (this.slides[b - step] ? -step
+                : Math.sign(step) * (this.length - Math.abs(step)))]);
+        };
+        // Set slides
+        const setSlides = (slides) => slides.forEach((slide, key) => {
+            this.slides[key] = slide;
+            content.appendChild(slide);
+        });
+        // Apply a first order
+        const scrollStep = Math.abs(Math.round(this.length / 2 - 1));
+        setSlides(getOrder(-scrollStep));
+        content.scroll({ left: content.clientWidth * scrollStep, behavior: "auto" });
+        // Set arrows
+        let arrow_a = document.createElement("button"), arrow_b = document.createElement("button"), image_a = document.createElement("img"), image_b = document.createElement("img");
+        arrow_a.classList.add(setClass('arrow'), 'left');
+        arrow_b.classList.add(setClass('arrow'), 'right');
+        image_a.classList.add(setClass('carret'));
+        image_b.classList.add(setClass('carret'));
         arrow_a.type = "button";
         arrow_b.type = "button";
-        arrow_a.style.filter = filter;
-        arrow_b.style.filter = filter;
-        image_a.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_a.alt = "Toggle left";
-        image_b.src = this.resourcesURI + "/flexcards.js/assets/icons/carret.svg";
         image_b.alt = "Toggle right";
-        if (timer) { // Create timer
+        arrow_a.appendChild(image_a);
+        arrow_b.appendChild(image_b);
+        container.insertBefore(arrow_a, content);
+        container.appendChild(arrow_b);
+        // Set image content
+        if (params.arrowUrl) {
+            image_a.src = params.arrowUrl;
+            image_b.src = params.arrowUrl;
+        }
+        else {
+            let imageUrl = URL.createObjectURL(new Blob([
+                '<svg width="54px" height="116px" xmlns="http://www.w3.org/2000/svg">',
+                '<path d="M8 8,l38 48,L8 108" fill="transparent" stroke="#000" stroke-width="15" ',
+                'stroke-linejoin="round" stroke-linecap="round" /></svg>'
+            ], { type: "image/svg+xml" }));
+            image_a.src = imageUrl;
+            image_b.src = imageUrl;
+        }
+        // Set theme
+        let theme = params.theme || "#444";
+        theme = theme.replace('#', '');
+        theme = theme.replace(/^([a-f\d])([a-f\d])([a-f\d])$/i, (_, r, g, b) => r + r + g + g + b + b);
+        if (!params.hasOwnProperty('colorized') || params.colorized) {
+            const result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(theme);
+            let rgb = result // Hex to Dec
+                ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+                : [0, 0, 0], filter = new RGBtoHSL(rgb[0], rgb[1], rgb[2]).solve();
+            arrow_a.style.filter = filter;
+            arrow_b.style.filter = filter;
+        }
+        // Set timer
+        if (!params.hasOwnProperty('theme') || params.colorized) {
+            const timerDisplay = document.createElement('span');
             let iterations = this.delay / this["refresh-time"] * 2;
-            timerDisplay.classList.add('flexcards__timer');
+            timerDisplay.classList.add(setClass('timer'));
             timerDisplay.style.setProperty('--theme', "#" + theme);
-            timerDisplay.style.transitionDuration = `${iterations}ms`;
-            container.append(timerDisplay);
+            timerDisplay.style.transitionDuration = iterations + "ms";
+            container.insertBefore(timerDisplay, arrow_a);
+            this.components.timer = timerDisplay;
             // Animation function
             setInterval(() => timerDisplay.style.setProperty('--percentage', (this.timeElapsed / this.delay * 200).toString()), iterations);
         }
-        // Mount components
-        this.container.classList.add("flexcards__wrapper");
-        this.container.innerHTML = "";
-        this.container.append(container, index);
-        arrow_a.appendChild(image_a);
-        arrow_b.appendChild(image_b);
-        container.append(arrow_a, content, arrow_b);
-        // Index (numbers)
-        if (indexType === 'numbers') {
-            let current = createElement('span'), limit = createElement('span');
-            current.classList.add('flexcards__count');
-            limit.classList.add('flexcards__limit');
-            current.innerHTML = "1";
-            limit.innerHTML = this.length.toString();
-            index.append(current, '/', limit);
-        }
-        this.slides.forEach((slide, key) => {
-            // Indexing dots
-            if (indexType === 'dots') {
-                let circle = createElement('span');
-                circle.classList.add('flexcards__dot');
-                if (!key)
-                    circle.classList.add('current');
-                circle.onclick = () => (function () {
-                    let count = key - this.index;
-                    for (let i = 0; i < Math.abs(count); i++) {
-                        if (count < 0)
-                            arrow_a.click();
-                        else if (count > 0)
-                            arrow_b.click();
-                    }
-                }).call(this);
-                index.appendChild(circle);
-            }
-            // Add slides in the content box
-            content.appendChild(slide);
-            slide.classList.add('flexcards__card');
-            if (component === 'images')
-                slide.classList.add('flexcards__image');
-            slide.setAttribute('data-id', key.toString());
-        }, this);
-        // Get time elapsed
-        let adder = this.delay / this["refresh-time"];
-        this.getElapsed = setInterval(() => this.timeElapsed += adder, adder);
-        return {
-            arrows: { left: arrow_a, right: arrow_b },
-            container, content, index,
-            timer: (timer ? timerDisplay : null),
-        };
-    }
-    /**
-     * Display an amazing carousel for your items.
-     */
-    carousel(params) {
-        // Mount components
-        const components = this.mount(params || Object());
-        this.container.classList.add('flexcards__carousel');
-        // Change slide when |scroll| >= 5%
-        function onScroll() {
-            let calc = 100 * (components.content.scrollLeft / components.content.clientWidth - 1);
-            // Change slide if >= 5%
-            if (calc >= 5)
-                components.arrows.right.click();
-            else if (calc <= -5)
-                components.arrows.left.click();
-        }
-        // Render function
-        function render(step = 0) {
-            // Re-init time elapsed
-            this.timeElapsed = 0;
-            const updateContent = () => {
-                // put the animation in this function
-                components.content.querySelectorAll('article').forEach(el => {
-                    el.classList.remove('animate');
-                    el.remove();
-                });
-                // Add items in a specific order
-                components.content.append(this.slides[(this.index - 1 < 0 ? this.length : this.index) - 1], this.slides[this.index], this.slides[this.index + 1 >= this.length ? 0 : this.index + 1]);
-                components.content.scroll({ left: components.content.clientWidth });
-                this.slides[this.index].classList.add('animate');
-                components.content.addEventListener('scroll', onScroll);
-                if (components.timer)
-                    components.timer.style.setProperty('--percentage', '0');
-            };
-            if (Math.abs(step)) { // If step != 0 (have to scroll)
-                components.content.removeEventListener('scroll', onScroll);
-                components.content.scroll({
-                    left: components.content.clientWidth * (1 + step),
-                    behavior: 'smooth',
-                });
-                setTimeout(updateContent, this["animation-time"]);
+        index.style.setProperty('--theme', "#" + theme);
+        // Set index
+        if (params.hasOwnProperty('indexType')) {
+            if (params.indexType === "numbers") {
+                let current = document.createElement('span'), limit = document.createElement('span');
+                current.classList.add(setClass('count'));
+                limit.classList.add(setClass('limit'));
+                current.textContent = "1";
+                limit.innerHTML = this.length.toString();
+                // Change value on update
+                current.addEventListener('update', () => (current.textContent = (this.index + 1).toString()));
+                index.append(current, '/', limit);
             }
             else
-                updateContent();
-            // Toggle index
-            if ((params === null || params === void 0 ? void 0 : params.indexType) && params.indexType === 'numbers') {
-                querySelector('.flexcards__wrapper .flexcards__index .flexcards__count')
-                    .innerHTML = (this.index + 1).toString();
-            }
-            else {
-                components.index.querySelectorAll('span').forEach((point, key) => {
-                    point.classList[this.index === key ? 'add' : 'remove']('current');
+                this.slides.forEach((_, key) => {
+                    let dot = document.createElement("span");
+                    dot.classList.add(setClass('dot'));
+                    // On a dot clicked, change current slide
+                    dot.onclick = () => (function () {
+                        let target = this.slides.filter(a => { var _b; return ((_b = a.dataset) === null || _b === void 0 ? void 0 : _b.id) === key.toString(); })[0], step = this.slides.map((a, b) => a == target ? b : 0).reduce((a, b) => a + b);
+                        render.call(this, step - Math.round(this.length / 2) + 1);
+                    }).call(this);
+                    dot.addEventListener('update', () => dot.classList[this.index === key ? 'add' : 'remove']('current'));
+                    index.appendChild(dot);
                 });
-            }
-            // Re-set "auto-scroll"
-            this.interval = setInterval(() => components.arrows.right.click(), this.delay);
         }
-        function onClick(ev) {
+        // render function
+        function render(step = 0) {
+            this.index += step;
+            // Remove interval and reset time elapsed
             clearInterval(this.interval);
-            let arrow = ev.currentTarget;
-            let initialIndex = this.index;
-            this.index += Number(arrow.classList.contains('left')) * -2 + 1;
-            // Check if index is a num between 0 and length
-            if (this.index < 0) {
+            this.timeElapsed = 0;
+            // Index must be between 0 and length
+            if (this.index < 0)
                 this.index = this.length - 1;
-                initialIndex = this.length;
-            }
-            else if (this.index >= this.length) {
+            else if (this.index >= this.length)
                 this.index = 0;
-                initialIndex = -1;
-            }
-            // And then render the result
-            render.call(this, this.index - initialIndex);
+            // Scroll and then change order
+            let order = getOrder(step);
+            content.removeEventListener('scroll', onScroll);
+            content.scroll({
+                left: content.clientWidth * (scrollStep + step),
+                behavior: 'smooth',
+            });
+            setTimeout(() => {
+                setSlides(order);
+                content.scroll({ left: content.clientWidth * scrollStep, behavior: 'auto' });
+                content.addEventListener('scroll', onScroll);
+            }, 600);
+            // Toggle index
+            index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
+            // Reset interval
+            this.interval = setInterval(() => arrow_b.click(), this.delay);
+        }
+        // Arrow events
+        function onArrowClick(ev) {
+            let arrow = ev.currentTarget;
+            render.call(this, Number(arrow.classList.contains('left')) * -2 + 1);
             arrow.blur();
         }
-        // Apply onClick event
-        [components.arrows.left, components.arrows.right].forEach(arrow => arrow.onclick = e => onClick.call(this, e));
-        // Seems strange, but removing this line, the code won't work properly :(
-        components.content.addEventListener('scroll', onScroll);
-        // Return components and render a first time to complete setup.
-        this.components = components;
+        function onScroll() {
+            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1;
+            calc = Math.round(calc * 100);
+            if (Math.abs(calc) >= 4)
+                (Math.sign(calc) + 1 ? arrow_b : arrow_a).click();
+        }
+        // onclick function (arrows)
+        [arrow_a, arrow_b].forEach(arrow => arrow.onclick = e => onArrowClick.call(this, e));
+        // Scroll event fix
+        content.addEventListener('scroll', onScroll);
+        // First render
         render.call(this);
     }
-    /** Stop */
     stop() { clearInterval(this.interval); }
 }
 class RGBtoHSL {
@@ -403,7 +397,7 @@ class RGBtoHSL {
                 values[i] = fix(values[i] - ak * g, i);
             }
             let loss = this.loss(values);
-            if (loss < bestLoss) {
+            if (loss < bestLoss) { // @ts-ignore
                 best = values.slice(0);
                 bestLoss = loss;
             }
@@ -424,9 +418,9 @@ class RGBtoHSL {
             + Math.abs(color.b - this.target.b) + Math.abs(colorHSL.l - this.targetHSL.l);
     }
     toString(filters) {
-        const fmt = (idx, multiplier = 1) => Math.round(filters[idx] * multiplier);
-        return `invert(${fmt(0)}%) ` + `sepia(${fmt(1)}%) `
-            + `saturate(${fmt(2)}%) ` + `hue-rotate(${fmt(3, 3.6)}deg) `
-            + `brightness(${fmt(4)}%) ` + `contrast(${fmt(5)}%)`;
+        const format = (idx, multiplier = 1) => Math.round(filters[idx] * multiplier);
+        return `invert(${format(0)}%) ` + `sepia(${format(1)}%) `
+            + `saturate(${format(2)}%) ` + `hue-rotate(${format(3, 3.6)}deg) `
+            + `brightness(${format(4)}%) ` + `contrast(${format(5)}%)`;
     }
 }
