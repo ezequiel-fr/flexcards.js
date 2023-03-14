@@ -4,7 +4,7 @@ interface FlexCardsComponents {
     index: HTMLDivElement;
     timer?: HTMLSpanElement;
 }
-declare type FlexCardsOptions = {
+type FlexCardsOptions = {
     components: "default" | "images";
 };
 interface FlexCardsParams extends Object {
@@ -34,6 +34,7 @@ declare class FlexCards {
     protected index: number;
     /** @var interval */
     protected interval: number;
+    private intervalFunc;
     /** @var "refresh-time" */
     "refresh-time": number;
     /** @var length */
@@ -48,7 +49,8 @@ declare class FlexCards {
      */
     constructor(element: string, options?: FlexCardsOptions);
     carousel(params?: FlexCardsParams): void;
-    stop(): void;
+    end(): void;
+    resume(): void;
 }
 declare class RGBtoHSL {
     private r;
