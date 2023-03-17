@@ -28,34 +28,46 @@ const setClass = (token: string) => "flexcards__" + token;
 
 class FlexCards {
 
-    /** @var components */
+    /** @var components components list */
     public components: FlexCardsComponents;
 
     /** @var container the HTML conainer used to render the current `flexcards.js` instance */
     public container: HTMLDivElement;
 
-    /** @var delay */
+    /** @var delay delay before next slide */
     public delay = 6e3;
 
-    /** @var index */
+    /** @var getElapsed get elapsed time */
+    private getElapsed: { delay: number, func: Function, id: number } = {
+        delay: this.delay,
+        id: setInterval(() => void 0, 1e8),
+        func: () => void 0,
+    };
+
+    /** @var index current slide */
     protected index = 0;
 
-    /** @var interval */
-    protected interval: number = setInterval(() => void 0, this.delay);
+    /** @var interval informations */
+    protected interval: { id: number, func: Function } = {
+        id: setInterval(() => void 0, 1e8),
+        func: () => void 0,
+    };
 
-    private intervalFunc: Function = () => void 0;
-
-    /** @var "refresh-time" */
-    public "refresh-time" = 250;
-
-    /** @var length */
+    /** @var length slides count */
     public readonly length;
 
-    /** @var slides */
+    /** @var playing current instance playing or not */
+    public playing: boolean = false;
+
+    /** @var "refresh-time" refresh times per seconds */
+    public "refresh-time" = 250;
+
+    /** @var slides list of all slides */
     public slides: (HTMLElement | HTMLImageElement)[];
 
-    /** @var timeElapsed */
+    /** @var timeElapsed time elapsed since begin */
     public timeElapsed = 0;
+
 
     /**
      * Permits creating a new FlexCards instance.
@@ -92,36 +104,36 @@ class FlexCards {
                 ' .flexcards__timer::before{content:"";display:block;position:absolute;height:5px',
                 ';z-index:2;top:0;background:var(--theme)}.flexcards__wrapper .flexcards__contain',
                 'er .flexcards__timer::before{width:100%;opacity:.4}.flexcards__wrapper .flexcard',
-                's__container .flexcards__timer::after{transition:all linear;width:calc(var(--per',
-                'centage) * .5%);opacity:.75}.flexcards__wrapper .flexcards__container .flexcards',
-                '__content{display:flex;width:100%;height:100%;z-index:1;overflow:scroll hidden;s',
-                'croll-behavior:auto}.flexcards__wrapper .flexcards__container .flexcards__conten',
-                't .flexcards__card{position:relative;min-width:100%;width:100%;height:100%;overf',
-                'low:hidden;-webkit-user-select:inherit;-moz-user-select:inherit;user-select:inhe',
-                'rit}.flexcards__wrapper .flexcards__container .flexcards__content .flexcards__ca',
-                'rd.flexcards__image{display:flex;flex-direction:column;justify-content:center;al',
-                'ign-items:center;-o-object-fit:cover;object-fit:cover;-webkit-user-select:none;-',
-                'moz-user-select:none;user-select:none}.flexcards__wrapper .flexcards__container ',
-                '.flexcards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;d',
-                'isplay:none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position',
-                ':absolute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline',
-                ':0;border:none;transform:none;transition:all .2s ease;display:flex;flex-directio',
-                'n:column;align-items:center;justify-content:center}.flexcards__wrapper .flexcard',
-                's__container .flexcards__arrow .flexcards__carret{position:relative;width:21px;-',
-                'o-object-fit:contain;object-fit:contain;pointer-events:none;display:block}.flexc',
-                'ards__wrapper .flexcards__container .flexcards__arrow.left{left:0}.flexcards__wr',
-                'apper .flexcards__container .flexcards__arrow.left img{transform:scaleX(-1)}.fle',
-                'xcards__wrapper .flexcards__container .flexcards__arrow.right{right:0}.flexcards',
-                '__wrapper .flexcards__container .flexcards__arrow:focus,.flexcards__wrapper .fle',
-                'xcards__container .flexcards__arrow:hover{transform:scale(107%)}.flexcards__wrap',
-                'per .flexcards__index{display:flex;justify-content:center;align-items:center;pos',
-                'ition:absolute;height:20px;min-width:29px;padding:1px 5px;bottom:5px;gap:5px;z-i',
-                'ndex:2;color:var(--theme)}.flexcards__wrapper .flexcards__index .flexcards__dot{',
-                'width:12px;height:12px;border-radius:60%;background:var(--theme);transition:all ',
-                '.2s;cursor:pointer;opacity:.4}.flexcards__wrapper .flexcards__index .flexcards__',
-                'dot:hover{opacity:65%}.flexcards__wrapper .flexcards__index .flexcards__dot.curr',
-                'ent{opacity:75%}.flexcards__wrapper .flexcards__index .flexcards__count,.flexcar',
-                'ds__wrapper .flexcards__index .flexcards__limit{pointer-events:none}',
+                's__container .flexcards__timer::after{transition:all linear;width:calc(var(--siz',
+                'e) * .5%);opacity:.75}.flexcards__wrapper .flexcards__container .flexcards__cont',
+                'ent{display:flex;width:100%;height:100%;z-index:1;overflow:scroll hidden;scroll-',
+                'behavior:auto}.flexcards__wrapper .flexcards__container .flexcards__content .fle',
+                'xcards__card{position:relative;min-width:100%;width:100%;height:100%;overflow:hi',
+                'dden;-webkit-user-select:inherit;-moz-user-select:inherit;user-select:inherit}.f',
+                'lexcards__wrapper .flexcards__container .flexcards__content .flexcards__card.fle',
+                'xcards__image{display:flex;flex-direction:column;justify-content:center;align-it',
+                'ems:center;-o-object-fit:cover;object-fit:cover;-webkit-user-select:none;-moz-us',
+                'er-select:none;user-select:none}.flexcards__wrapper .flexcards__container .flexc',
+                'ards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;display',
+                ':none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position:absol',
+                'ute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline:0;bor',
+                'der:none;transform:none;transition:all .2s ease;display:flex;flex-direction:colu',
+                'mn;align-items:center;justify-content:center}.flexcards__wrapper .flexcards__con',
+                'tainer .flexcards__arrow .flexcards__carret{position:relative;width:21px;-o-obje',
+                'ct-fit:contain;object-fit:contain;pointer-events:none;display:block}.flexcards__',
+                'wrapper .flexcards__container .flexcards__arrow.left{left:0}.flexcards__wrapper ',
+                '.flexcards__container .flexcards__arrow.left img{transform:scaleX(-1)}.flexcards',
+                '__wrapper .flexcards__container .flexcards__arrow.right{right:0}.flexcards__wrap',
+                'per .flexcards__container .flexcards__arrow:focus,.flexcards__wrapper .flexcards',
+                '__container .flexcards__arrow:hover{transform:scale(107%)}.flexcards__wrapper .f',
+                'lexcards__index{display:flex;justify-content:center;align-items:center;position:',
+                'absolute;height:20px;min-width:29px;padding:1px 5px;bottom:5px;gap:5px;z-index:2',
+                ';color:var(--theme)}.flexcards__wrapper .flexcards__index .flexcards__dot{width:',
+                '12px;height:12px;border-radius:60%;background:var(--theme);transition:all .2s;cu',
+                'rsor:pointer;opacity:.4}.flexcards__wrapper .flexcards__index .flexcards__dot:ho',
+                'ver{opacity:65%}.flexcards__wrapper .flexcards__index .flexcards__dot.current{op',
+                'acity:75%}.flexcards__wrapper .flexcards__index .flexcards__count,.flexcards__wr',
+                'apper .flexcards__index .flexcards__limit{pointer-events:none}',
             ], { type: "text/css" }));
 
             document.head.appendChild(css);
@@ -130,7 +142,8 @@ class FlexCards {
 
         // Get time elapsed
         let adder = this.delay / this["refresh-time"];
-        setInterval(() => this.timeElapsed += adder, adder);
+        this.getElapsed.func = () => this.timeElapsed += adder;
+        this.getElapsed.delay = adder;
 
         // Set bases
         this.slides = Array.from(this.container.querySelectorAll(
@@ -218,6 +231,8 @@ class FlexCards {
         container.insertBefore(arrow_a, content);
         container.appendChild(arrow_b);
 
+        this.interval.func = () => arrow_b.click();
+
         // Set image content
         if (params.arrowUrl) {
             image_a.src = params.arrowUrl;
@@ -232,7 +247,7 @@ class FlexCards {
             image_a.src = imageUrl;
             image_b.src = imageUrl;
 
-            setTimeout(URL.revokeObjectURL, undefined, imageUrl);
+            queueMicrotask(() => URL.revokeObjectURL(imageUrl));
         }
 
         // Set theme
@@ -266,7 +281,7 @@ class FlexCards {
             this.components.timer = timerDisplay;
 
             // Animation function
-            setInterval(() => timerDisplay.style.setProperty('--percentage', (
+            setInterval(() => timerDisplay.style.setProperty('--size', (
                 this.timeElapsed / this.delay * 200
             ).toString()), iterations);
         }
@@ -317,7 +332,7 @@ class FlexCards {
             this.index += step;
 
             // Remove interval and reset time elapsed
-            clearInterval(this.interval);
+            this.pause();
             this.timeElapsed = 0;
 
             // Index must be between 0 and length
@@ -342,9 +357,8 @@ class FlexCards {
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
 
-            // Reset interval
-            this.intervalFunc = () => arrow_b.click();
-            this.resume();
+            // Reset intervals
+            this.play();
         }
 
         // Arrow events
@@ -372,13 +386,29 @@ class FlexCards {
         render.call(this);
     }
 
-    public end() {
-        clearInterval(this.interval);
-        this.intervalFunc = () => void 0;
+    public pause() {
+        clearInterval(this.interval.id);
+        clearInterval(this.getElapsed.id);
+
+        // Change playing state to false
+        this.playing = false;
     }
 
-    public resume() {
-        this.interval = setInterval(this.intervalFunc, this.delay);
+    public play() {
+        // Delay protection
+        this.delay = Math.abs(this.delay);
+
+        // Calculate interval
+        let interval = Math.abs(this.delay - this.timeElapsed);
+        if (interval > this.delay) interval = this.delay;
+
+        if (!this.playing) {
+            this.interval.id = setInterval(this.interval.func, interval);
+            this.getElapsed.id = setInterval(this.getElapsed.func, this.getElapsed.delay);
+        }
+
+        // Change playing state to true
+        this.playing = true;
     }
 }
 
