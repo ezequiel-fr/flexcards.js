@@ -24,23 +24,30 @@ declare const setClass: (token: string) => string;
  * @license TheUnlicense
  */
 declare class FlexCards {
-    /** @var components */
+    /** @var components components list */
     components: FlexCardsComponents;
     /** @var container the HTML conainer used to render the current `flexcards.js` instance */
     container: HTMLDivElement;
-    /** @var delay */
+    /** @var delay delay before next slide */
     delay: number;
-    /** @var index */
+    /** @var getElapsed get elapsed time */
+    private getElapsed;
+    /** @var index current slide */
     protected index: number;
-    /** @var interval */
-    protected interval: number;
-    /** @var "refresh-time" */
-    "refresh-time": number;
-    /** @var length */
+    /** @var interval informations */
+    protected interval: {
+        id: number;
+        func: Function;
+    };
+    /** @var length slides count */
     readonly length: number;
-    /** @var slides */
+    /** @var playing current instance playing or not */
+    playing: boolean;
+    /** @var "refresh-time" refresh times per seconds */
+    "refresh-time": number;
+    /** @var slides list of all slides */
     slides: (HTMLElement | HTMLImageElement)[];
-    /** @var timeElapsed */
+    /** @var timeElapsed time elapsed since begin */
     timeElapsed: number;
     /**
      * Permits creating a new FlexCards instance.
@@ -48,7 +55,8 @@ declare class FlexCards {
      */
     constructor(element: string, options?: FlexCardsOptions);
     carousel(params?: FlexCardsParams): void;
-    stop(): void;
+    pause(): void;
+    play(): void;
 }
 declare class RGBtoHSL {
     private r;

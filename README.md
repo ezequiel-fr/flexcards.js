@@ -11,7 +11,8 @@
 
 ## Functions
 - Controllers :
-    - `stop` - Just stop all animations.
+    - `pause` : Stops all animations.
+    - `play` : Resume stopped animations.
 - Sliders :
     - `carousel` - A simple
     [carousel](https://theredminetheredmine.github.io/flexcards.js/pages/carousel.html)
@@ -23,6 +24,7 @@ Here, the liste of all variables returned by the creation of a new flexcards.js 
 - `delay` : The delay used between every changes.
 - `index` : The index of the current slide showed.
 - `length` : Count of all slides.
+- `playing` : A boolean returning the current playing state.
 - `refresh-time` : An index representing the refresh the instance made. The more greater the index,
 the more number of refresh.
 - `slides` : An array with all the slides.

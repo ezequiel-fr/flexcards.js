@@ -14,15 +14,26 @@ class FlexCards {
      * @param element the JavaScript element selector.
      */
     constructor(element, options = { components: "default" }) {
-        /** @var delay */
+        /** @var delay delay before next slide */
         this.delay = 6e3;
-        /** @var index */
+        /** @var getElapsed get elapsed time */
+        this.getElapsed = {
+            delay: this.delay,
+            id: setInterval(() => void 0, 1e8),
+            func: () => void 0,
+        };
+        /** @var index current slide */
         this.index = 0;
-        /** @var interval */
-        this.interval = setInterval(() => void 0, this.delay);
-        /** @var "refresh-time" */
+        /** @var interval informations */
+        this.interval = {
+            id: setInterval(() => void 0, 1e8),
+            func: () => void 0,
+        };
+        /** @var playing current instance playing or not */
+        this.playing = false;
+        /** @var "refresh-time" refresh times per seconds */
         this["refresh-time"] = 250;
-        /** @var timeElapsed */
+        /** @var timeElapsed time elapsed since begin */
         this.timeElapsed = 0;
         // Set up main element that will be used.
         try {
@@ -37,53 +48,60 @@ class FlexCards {
             this.container = document.createElement('div');
         }
         // Set up main StyleSheet
-        const css = document.createElement('link');
-        css.rel = "stylesheet";
-        css.type = "text/css";
-        css.href = URL.createObjectURL(new Blob([
-            '.flexcards__wrapper{position:relative!important;display:flex;flex-flow:column nowrap',
-            ';align-items:center;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
-            '.flexcards__wrapper .flexcards__container{display:flex;justify-content:center;align-',
-            'items:center;position:relative;overflow:hidden;height:100%;width:100%}.flexcards__wr',
-            'apper .flexcards__container .flexcards__timer{display:block;position:absolute;width:',
-            '100%;height:5px;z-index:2;top:0}.flexcards__wrapper .flexcards__container .flexcards',
-            '__timer::after,.flexcards__wrapper .flexcards__container .flexcards__timer::before{c',
-            'ontent:"";display:block;position:absolute;height:5px;z-index:2;top:0;background:var(',
-            '--theme)}.flexcards__wrapper .flexcards__container .flexcards__timer::before{width:1',
-            '00%;opacity:.4}.flexcards__wrapper .flexcards__container .flexcards__timer::after{tr',
-            'ansition:all linear;width:calc(var(--percentage) * .5%);opacity:.75}.flexcards__wrap',
-            'per .flexcards__container .flexcards__content{display:flex;width:100%;height:100%;z-',
-            'index:1;overflow:scroll hidden;scroll-behavior:auto}.flexcards__wrapper .flexcards__',
-            'container .flexcards__content .flexcards__card{position:relative;min-width:100%;widt',
-            'h:100%;height:100%;overflow:hidden;-webkit-user-select:inherit;-moz-user-select:inhe',
-            'rit;user-select:inherit}.flexcards__wrapper .flexcards__container .flexcards__conten',
-            't .flexcards__card.flexcards__image{display:flex;flex-direction:column;justify-conte',
-            'nt:center;align-items:center;-o-object-fit:cover;object-fit:cover;-webkit-user-selec',
-            't:none;-moz-user-select:none;user-select:none}.flexcards__wrapper .flexcards__contai',
-            'ner .flexcards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;d',
-            'isplay:none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position:abs',
-            'olute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline:0;borde',
-            'r:none;transform:none;transition:all .2s ease;display:flex;flex-direction:column;ali',
-            'gn-items:center;justify-content:center}.flexcards__wrapper .flexcards__container .fl',
-            'excards__arrow .flexcards__carret{position:relative;width:21px;-o-object-fit:contain',
-            ';object-fit:contain;pointer-events:none;display:block}.flexcards__wrapper .flexcards',
-            '__container .flexcards__arrow.left{left:0}.flexcards__wrapper .flexcards__container ',
-            '.flexcards__arrow.left img{transform:rotate(.5turn)}.flexcards__wrapper .flexcards__',
-            'container .flexcards__arrow.right{right:0}.flexcards__wrapper .flexcards__container ',
-            '.flexcards__arrow:focus,.flexcards__wrapper .flexcards__container .flexcards__arrow:',
-            'hover{transform:scale(107%)}.flexcards__wrapper .flexcards__index{display:flex;justi',
-            'fy-content:center;align-items:center;position:absolute;height:20px;min-width:29px;pa',
-            'dding:1px 5px;bottom:5px;gap:5px;z-index:2;color:var(--theme)}.flexcards__wrapper .f',
-            'lexcards__index .flexcards__dot{width:12px;height:12px;border-radius:60%;background:',
-            'var(--theme);transition:all .2s;cursor:pointer;opacity:.4}.flexcards__wrapper .flexc',
-            'ards__index .flexcards__dot:hover{opacity:65%}.flexcards__wrapper .flexcards__index ',
-            '.flexcards__dot.current{opacity:75%}.flexcards__wrapper .flexcards__index .flexcards',
-            '__count,.flexcards__wrapper .flexcards__index .flexcards__limit{pointer-events:none}',
-        ], { type: "text/css" }));
-        document.head.appendChild(css);
+        if (!document.getElementById('flexcards-style')) {
+            const css = document.createElement('link');
+            css.type = "text/css";
+            css.rel = "stylesheet";
+            css.id = "flexcards-style";
+            css.href = URL.createObjectURL(new Blob([
+                '.flexcards__wrapper{position:relative!important;display:flex;flex-flow:column no',
+                'wrap;align-items:center;-webkit-user-select:none;-moz-user-select:none;user-sele',
+                'ct:none}.flexcards__wrapper .flexcards__container{display:flex;justify-content:c',
+                'enter;align-items:center;position:relative;overflow:hidden;height:100%;width:100',
+                '%}.flexcards__wrapper .flexcards__container .flexcards__timer{display:block;posi',
+                'tion:absolute;width:100%;height:5px;z-index:2;top:0}.flexcards__wrapper .flexcar',
+                'ds__container .flexcards__timer::after,.flexcards__wrapper .flexcards__container',
+                ' .flexcards__timer::before{content:"";display:block;position:absolute;height:5px',
+                ';z-index:2;top:0;background:var(--theme)}.flexcards__wrapper .flexcards__contain',
+                'er .flexcards__timer::before{width:100%;opacity:.4}.flexcards__wrapper .flexcard',
+                's__container .flexcards__timer::after{transition:all linear;width:calc(var(--siz',
+                'e) * .5%);opacity:.75}.flexcards__wrapper .flexcards__container .flexcards__cont',
+                'ent{display:flex;width:100%;height:100%;z-index:1;overflow:scroll hidden;scroll-',
+                'behavior:auto}.flexcards__wrapper .flexcards__container .flexcards__content .fle',
+                'xcards__card{position:relative;min-width:100%;width:100%;height:100%;overflow:hi',
+                'dden;-webkit-user-select:inherit;-moz-user-select:inherit;user-select:inherit}.f',
+                'lexcards__wrapper .flexcards__container .flexcards__content .flexcards__card.fle',
+                'xcards__image{display:flex;flex-direction:column;justify-content:center;align-it',
+                'ems:center;-o-object-fit:cover;object-fit:cover;-webkit-user-select:none;-moz-us',
+                'er-select:none;user-select:none}.flexcards__wrapper .flexcards__container .flexc',
+                'ards__content::-webkit-scrollbar{-webkit-appearance:none;appearance:none;display',
+                ':none}.flexcards__wrapper .flexcards__container .flexcards__arrow{position:absol',
+                'ute;background:0 0;height:100%;width:30px;cursor:pointer;z-index:2;outline:0;bor',
+                'der:none;transform:none;transition:all .2s ease;display:flex;flex-direction:colu',
+                'mn;align-items:center;justify-content:center}.flexcards__wrapper .flexcards__con',
+                'tainer .flexcards__arrow .flexcards__carret{position:relative;width:21px;-o-obje',
+                'ct-fit:contain;object-fit:contain;pointer-events:none;display:block}.flexcards__',
+                'wrapper .flexcards__container .flexcards__arrow.left{left:0}.flexcards__wrapper ',
+                '.flexcards__container .flexcards__arrow.left img{transform:scaleX(-1)}.flexcards',
+                '__wrapper .flexcards__container .flexcards__arrow.right{right:0}.flexcards__wrap',
+                'per .flexcards__container .flexcards__arrow:focus,.flexcards__wrapper .flexcards',
+                '__container .flexcards__arrow:hover{transform:scale(107%)}.flexcards__wrapper .f',
+                'lexcards__index{display:flex;justify-content:center;align-items:center;position:',
+                'absolute;height:20px;min-width:29px;padding:1px 5px;bottom:5px;gap:5px;z-index:2',
+                ';color:var(--theme)}.flexcards__wrapper .flexcards__index .flexcards__dot{width:',
+                '12px;height:12px;border-radius:60%;background:var(--theme);transition:all .2s;cu',
+                'rsor:pointer;opacity:.4}.flexcards__wrapper .flexcards__index .flexcards__dot:ho',
+                'ver{opacity:65%}.flexcards__wrapper .flexcards__index .flexcards__dot.current{op',
+                'acity:75%}.flexcards__wrapper .flexcards__index .flexcards__count,.flexcards__wr',
+                'apper .flexcards__index .flexcards__limit{pointer-events:none}',
+            ], { type: "text/css" }));
+            document.head.appendChild(css);
+            queueMicrotask(() => URL.revokeObjectURL(css.href));
+        }
         // Get time elapsed
         let adder = this.delay / this["refresh-time"];
-        setInterval(() => this.timeElapsed += adder, adder);
+        this.getElapsed.func = () => this.timeElapsed += adder;
+        this.getElapsed.delay = adder;
         // Set bases
         this.slides = Array.from(this.container.querySelectorAll(options.components === "default" ? "article" : "img"));
         this.length = this.slides.length;
@@ -114,9 +132,9 @@ class FlexCards {
         const { container, content, index } = this.components;
         // Get new slides order
         const getOrder = (step = 1) => {
-            step = -(step % this.length);
-            return this.slides.map((_a, b) => this.slides[b + (this.slides[b - step] ? -step
-                : Math.sign(step) * (this.length - Math.abs(step)))]);
+            step %= this.length;
+            return this.slides.map((_a, b) => this.slides[b + (this.slides[b + step] ? step
+                : Math.sign(-step) * (this.length - Math.abs(step)))]);
         };
         // Set slides
         const setSlides = (slides) => slides.forEach((slide, key) => {
@@ -124,6 +142,7 @@ class FlexCards {
             content.appendChild(slide);
         });
         // Apply a first order
+        /** @const scrollStep positive number */
         const scrollStep = Math.abs(Math.round(this.length / 2 - 1));
         setSlides(getOrder(-scrollStep));
         content.scroll({ left: content.clientWidth * scrollStep, behavior: "auto" });
@@ -141,6 +160,7 @@ class FlexCards {
         arrow_b.appendChild(image_b);
         container.insertBefore(arrow_a, content);
         container.appendChild(arrow_b);
+        this.interval.func = () => arrow_b.click();
         // Set image content
         if (params.arrowUrl) {
             image_a.src = params.arrowUrl;
@@ -149,11 +169,12 @@ class FlexCards {
         else {
             let imageUrl = URL.createObjectURL(new Blob([
                 '<svg width="54px" height="116px" xmlns="http://www.w3.org/2000/svg">',
-                '<path d="M8 8,l38 48,L8 108" fill="transparent" stroke="#000" stroke-width="15" ',
-                'stroke-linejoin="round" stroke-linecap="round" /></svg>'
+                '<path d="M8 8,l38 48,L8 108" fill="transparent" stroke="#000" stroke-width="15"',
+                ' stroke-linejoin="round" stroke-linecap="round"/></svg>'
             ], { type: "image/svg+xml" }));
             image_a.src = imageUrl;
             image_b.src = imageUrl;
+            queueMicrotask(() => URL.revokeObjectURL(imageUrl));
         }
         // Set theme
         let theme = params.theme || "#444";
@@ -177,7 +198,7 @@ class FlexCards {
             container.insertBefore(timerDisplay, arrow_a);
             this.components.timer = timerDisplay;
             // Animation function
-            setInterval(() => timerDisplay.style.setProperty('--percentage', (this.timeElapsed / this.delay * 200).toString()), iterations);
+            setInterval(() => timerDisplay.style.setProperty('--size', (this.timeElapsed / this.delay * 200).toString()), iterations);
         }
         index.style.setProperty('--theme', "#" + theme);
         // Set index
@@ -209,7 +230,7 @@ class FlexCards {
         function render(step = 0) {
             this.index += step;
             // Remove interval and reset time elapsed
-            clearInterval(this.interval);
+            this.pause();
             this.timeElapsed = 0;
             // Index must be between 0 and length
             if (this.index < 0)
@@ -230,8 +251,8 @@ class FlexCards {
             }, 600);
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
-            // Reset interval
-            this.interval = setInterval(() => arrow_b.click(), this.delay);
+            // Reset intervals
+            this.play();
         }
         // Arrow events
         function onArrowClick(ev) {
@@ -252,7 +273,26 @@ class FlexCards {
         // First render
         render.call(this);
     }
-    stop() { clearInterval(this.interval); }
+    pause() {
+        clearInterval(this.interval.id);
+        clearInterval(this.getElapsed.id);
+        // Change playing state to false
+        this.playing = false;
+    }
+    play() {
+        // Delay protection
+        this.delay = Math.abs(this.delay);
+        // Calculate interval
+        let interval = Math.abs(this.delay - this.timeElapsed);
+        if (interval > this.delay)
+            interval = this.delay;
+        if (!this.playing) {
+            this.interval.id = setInterval(this.interval.func, interval);
+            this.getElapsed.id = setInterval(this.getElapsed.func, this.getElapsed.delay);
+        }
+        // Change playing state to true
+        this.playing = true;
+    }
 }
 class RGBtoHSL {
     constructor(r, g, b) {
