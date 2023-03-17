@@ -39,7 +39,7 @@
 }
 .flexcards__wrapper .flexcards__container .flexcards__timer::after {
   transition: all linear;
-  width: calc(var(--percentage) * 0.5%);
+  width: calc(var(--size) * 0.5%);
   opacity: 0.75;
 }
 .flexcards__wrapper .flexcards__container .flexcards__content {

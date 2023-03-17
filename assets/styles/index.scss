@@ -39,7 +39,7 @@
 
             &::after {
                 transition: all linear;
-                width: calc(var(--percentage) * .5%);
+                width: calc(var(--size) * .5%);
                 opacity: .75;
             }
         }
