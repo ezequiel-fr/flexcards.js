@@ -131,9 +131,9 @@ class FlexCards {
     }) {
         const { container, content, index } = this.components;
         // Get new slides order
-        const getOrder = (step = 1) => {
+        const getOrder = (arr, step = 1) => {
             step %= this.length;
-            return this.slides.map((_a, b) => this.slides[b + (this.slides[b + step] ? step
+            return arr.map((_a, b) => arr[b + (arr[b + step] ? step
                 : Math.sign(-step) * (this.length - Math.abs(step)))]);
         };
         // Set slides
@@ -144,8 +144,12 @@ class FlexCards {
         // Apply a first order
         /** @const scrollStep positive number */
         const scrollStep = Math.abs(Math.round(this.length / 2 - 1));
-        setSlides(getOrder(-scrollStep));
+        setSlides(getOrder(this.slides, -scrollStep));
         content.scroll({ left: content.clientWidth * scrollStep, behavior: "auto" });
+        // Window resized event (prevent glitch)
+        window.addEventListener('resize', () => content.scroll({
+            left: content.clientWidth * scrollStep, behavior: "auto"
+        }));
         // Set arrows
         let arrow_a = document.createElement("button"), arrow_b = document.createElement("button"), image_a = document.createElement("img"), image_b = document.createElement("img");
         arrow_a.classList.add(setClass('arrow'), 'left');
@@ -238,7 +242,9 @@ class FlexCards {
             else if (this.index >= this.length)
                 this.index = 0;
             // Scroll and then change order
-            let order = getOrder(step);
+            let order = getOrder(this.slides, step);
+            while (order[scrollStep].dataset.id !== this.index.toString())
+                order = getOrder(order, step);
             content.removeEventListener('scroll', onScroll);
             content.scroll({
                 left: content.clientWidth * (scrollStep + step),
