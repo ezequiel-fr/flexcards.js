@@ -7,14 +7,25 @@ interface FlexCardsComponents {
 
 type FlexCardsOptions = { components: "default" | "images" };
 
+/**
+ * The FlexCards parameters to apply to the instance.\
+ * The `flexcards.js` instance provided an HTML `<div>`, and here, you can customize or add your
+ * own properties, like CSS or className...
+ */
 interface FlexCardsParams extends Object {
+    /** The arrow image url (by default provide a custom SVG image) */
     arrowUrl?: string;
+    /** Apply a filter or not to the arrow (works better on SVG dark arrows) */
     colorized?: boolean;
-    indexType?: "dots" | "numbers";
+    /** Show the index display to be on top of the carousel */
+    indexType?: "dots" | "numbers" | "none";
+    /** Hexadecimal color code to apply to the instance */
     theme?: string;
+    /** Indicate wether a progress bar should be displayed at the top of the instance or not */
     timer?: boolean;
 }
 
+/** @const setClass qui shorthand for HTML classes */
 const setClass = (token: string) => "flexcards__" + token;
 
 /**
@@ -341,7 +352,7 @@ class FlexCards {
             this.timeElapsed = 0;
 
             // Index must be between 0 and length
-            if (this.index < 0) this.index = this.length - 1;
+            if (this.index < 0) this.index += this.length;
             else if (this.index >= this.length) this.index = 0;
 
             // Scroll and then change order
@@ -420,6 +431,11 @@ class FlexCards {
     }
 }
 
+/**
+ * Customized code found in this
+ * [StackOverflow subject](https://stackoverflow.com/a/42966641/604861).\
+ * So all credits goes to the post on this topic, and espcially to MultiplyByZer0.
+ */
 class RGBtoHSL {
     private r: number;
     private g: number;

@@ -1,9 +1,18 @@
 # `flexcards.js`
 ![Author](https://badgen.net/badge/Author/TheRedMine/green)
 ![License](https://badgen.net/badge/License/TheUnlicense/blue?icon=github)
+[![NPM](https://img.shields.io/npm/v/flexcardsjs-react.svg)](https://www.npmjs.com/package/flexcardsjs-react)
 
 ## Summary :
 - [Usage](#usage)
+    * [HTML5](#html5)
+        * [Download](#download)
+        * [Setting up a new instance](#setup)
+        * [Adding parameters](#adding-parameters)
+    * [React](#react)
+        * [Installation](#installation)
+        * [Setup and parameters](#react-setup-and-parameters)
+        * [Components](#react-components)
 - [Functions and demo](#functions)
 - [Variables](#variables)
 - [Functions parameters](#parameters)
@@ -31,11 +40,14 @@ the more number of refresh.
 - `timeElapsed` : Time elapsed before last slide change.
 
 ## Usage
+<!-- HTML5 usage -->
+### HTML5
+#### Download
 After downloading the [flexcards.js](./dist/flexcards.min.js) file, you can follow the tutorial
 bellow to use flexcards.js.
 <br /> For more informations about the functions used, go to [function](#functions) category.
 
-### In HTML
+#### Setup
 - In your HTML file, just put the link to the JS file :
 ```html
 <!-- In the header -->
@@ -58,7 +70,7 @@ const flexcards = new FlexCards("#flexcards"); // your JS selector
 flexcards.carousel(); // e.g. carousel
 ```
 
-### Adding parameters
+#### Adding parameters
 Check the [parameters](#parameters) list to get more informations about.\
 In HTML with the `<script>` tag or in JavaScript :
 ```js
@@ -67,6 +79,43 @@ const flexcards = new FlexCards("#flexards");
 // Example with the carousel :
 flexcards.carousel({ theme: '#f00' });
 ```
+
+<!-- React usage -->
+### React
+#### Installation
+Run this npm command in your command line tool in a React project. Then you can start using this
+package thanks to the example bellow.
+```bash
+npm install --save flexcardsjs-react
+```
+#### React setup and parameters
+1. Before anything, you must import the components of the package, like this :
+```js
+import FlexCards from 'flexcards-react';
+// or
+import { Component } from 'flexcards-react';
+```
+2. Usage of components :\
+Only custom elements comming from the FlexCards package an be used into the flexcards.js instance
+you want use.
+```jsx
+const App = () => (
+    <Carousel theme="#f56" delay={7500}>
+        <Component>
+            <h2>Some title</h2>
+            Lorem ipsum dolor sit amet consectetur...
+        </Component>
+
+        <ImageComponent src="http://example.org/image.png">
+    </Carousel>
+);
+```
+#### React components
+- `Carousel` : An amazing and well powered carousel.\
+The attributes which can be added are the same of those in the [parameters section](#parameters).
+- `Component` : A custom component wherever you can put what you want into (basically, it's an
+`article`).
+- `ImageComponent` : A slide with only one image
 
 ## Parameters
 Parameters can be added in JSON format in the function called thanks to the flexcards.js instance.
