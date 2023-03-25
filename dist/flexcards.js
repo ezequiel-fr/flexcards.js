@@ -1,4 +1,5 @@
 "use strict";
+/** @const setClass qui shorthand for HTML classes */
 const setClass = (token) => "flexcards__" + token;
 /**
  * flexcards.js - A powerful JavaScript library to make your website better.
@@ -238,7 +239,7 @@ class FlexCards {
             this.timeElapsed = 0;
             // Index must be between 0 and length
             if (this.index < 0)
-                this.index = this.length - 1;
+                this.index += this.length;
             else if (this.index >= this.length)
                 this.index = 0;
             // Scroll and then change order
@@ -300,6 +301,11 @@ class FlexCards {
         this.playing = true;
     }
 }
+/**
+ * Customized code found in this
+ * [StackOverflow subject](https://stackoverflow.com/a/42966641/604861).\
+ * So all credits goes to the post on this topic, and espcially to MultiplyByZer0.
+ */
 class RGBtoHSL {
     constructor(r, g, b) {
         this.r = this.clamp(r);

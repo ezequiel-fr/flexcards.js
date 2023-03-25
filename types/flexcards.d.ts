@@ -7,13 +7,24 @@ interface FlexCardsComponents {
 declare type FlexCardsOptions = {
     components: "default" | "images";
 };
+/**
+ * The FlexCards parameters to apply to the instance.\
+ * The `flexcards.js` instance provided an HTML `<div>`, and here, you can customize or add your
+ * own properties, like CSS or className...
+ */
 interface FlexCardsParams extends Object {
+    /** The arrow image url (by default provide a custom SVG image) */
     arrowUrl?: string;
+    /** Apply a filter or not to the arrow (works better on SVG dark arrows) */
     colorized?: boolean;
-    indexType?: "dots" | "numbers";
+    /** Show the index display to be on top of the carousel */
+    indexType?: "dots" | "numbers" | "none";
+    /** Hexadecimal color code to apply to the instance */
     theme?: string;
+    /** Indicate wether a progress bar should be displayed at the top of the instance or not */
     timer?: boolean;
 }
+/** @const setClass qui shorthand for HTML classes */
 declare const setClass: (token: string) => string;
 /**
  * flexcards.js - A powerful JavaScript library to make your website better.
@@ -58,6 +69,11 @@ declare class FlexCards {
     pause(): void;
     play(): void;
 }
+/**
+ * Customized code found in this
+ * [StackOverflow subject](https://stackoverflow.com/a/42966641/604861).\
+ * So all credits goes to the post on this topic, and espcially to MultiplyByZer0.
+ */
 declare class RGBtoHSL {
     private r;
     private g;
