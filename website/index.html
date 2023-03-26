@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Home • flexcards.js</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./styles/index.css">
+    <link rel="stylesheet" href="./styles/sheet.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900">
+
+    <script src="./website.js"></script>
+    <script src="../dist/flexcards.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons/dist/ionicons/ionicons.js"></script>
+
+</head>
+<body>
+
+    <header class="row space-between align-center">
+        <div class="logo">
+            <h2>flexcards.js</h2>
+        </div>
+
+        <nav class="row">
+            <li class="selected"><a class="transition" href="#">Home</a></li>
+            <li><a class="transition" href="#">Get started</a></li>
+            <li><a class="transition" href="#">Github</a></li>
+        </nav>
+
+        <button class="lightmode col-center transition btn-attr" id="lightmode">
+            <ion-icon name="moon-outline"></ion-icon>
+        </button>
+    </header>
+
+    <main>
+        <span class="fix d-block"></span>
+
+        <section id="presentation" class="col-center">
+            <h1>flexcards.js</h1>
+
+            <span class="quote">
+                A Javascript library to improve your sliders, carousels and more, easily.
+            </span>
+
+            <div class="quick-actions row">
+                <button class="col-center btn-attr transition" id="download-page">
+                    Download
+                </button>
+                <button class="col-center btn-attr transition" id="start-page">
+                    Get started
+                </button>
+            </div>
+        </section>
+
+        <h2 class="subtitle col-center">Demo</h2>
+
+        <section id="carousel-demo" class="row-center wrap">
+            <div class="content col-center">
+                <h3>Carousel</h3>
+                <span>Infinite carousel</span>
+            </div>
+
+            <div class="carousel col-center">
+                <div class="carousel-demo">
+                    <article class="col-center">
+                        <div class="content col-center">Slide : 1</div>
+                    </article>
+                    <article class="col-center">
+                        <div class="content col-center">Slide : 2</div>
+                    </article>
+                    <article class="col-center">
+                        <div class="content col-center">Slide : 3</div>
+                    </article>
+                    <article class="col-center">
+                        <div class="content col-center">Slide : 4</div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
