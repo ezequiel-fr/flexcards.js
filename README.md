@@ -1,7 +1,9 @@
-# `flexcards.js`
+<h1 style="font-size: 3.5rem; text-align: center">flexcards.js</h1>
+
 ![Author](https://badgen.net/badge/Author/TheRedMine/green)
 ![License](https://badgen.net/badge/License/TheUnlicense/blue?icon=github)
-[![NPM](https://img.shields.io/npm/v/flexcardsjs-react.svg)](https://www.npmjs.com/package/flexcardsjs-react)
+[![Downloads](https://img.shields.io/npm/dt/flexcardsjs?color=red&label=Downloads)](https://www.npmjs.com/package/flexcardsjs)
+[![React downloads](https://img.shields.io/npm/dt/flexcardsjs-react?color=red&label=React%20downloads)](https://www.npmjs.com/package/flexcardsjs-react)
 
 ## Summary :
 - [Usage](#usage)
@@ -26,6 +28,9 @@
     - `carousel` - A simple
     [carousel](https://theredminetheredmine.github.io/flexcards.js/pages/carousel.html)
 
+Demo and documentation available
+[here](https://theredminetheredmine.github.io/flexcards.js/website/).
+
 ## Variables
 Here, the liste of all variables returned by the creation of a new flexcards.js instance :
 - `components` : An object containing all components used by the instance called.
@@ -46,6 +51,10 @@ the more number of refresh.
 After downloading the [flexcards.js](./dist/flexcards.min.js) file, you can follow the tutorial
 bellow to use flexcards.js.
 <br /> For more informations about the functions used, go to [function](#functions) category.
+If you don't want to download, you can use the UNPKG link :
+```
+https://unpkg.com/flexcardsjs/dist/flexcards.min.js
+```
 
 #### Setup
 - In your HTML file, just put the link to the JS file :
@@ -86,7 +95,7 @@ flexcards.carousel({ theme: '#f00' });
 Run this npm command in your command line tool in a React project. Then you can start using this
 package thanks to the example bellow.
 ```bash
-npm install --save flexcardsjs-react
+$ npm install --save flexcardsjs-react
 ```
 #### React setup and parameters
 1. Before anything, you must import the components of the package, like this :

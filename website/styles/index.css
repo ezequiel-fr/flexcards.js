@@ -1,0 +1,189 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter";
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.transition {
+  transition: all 0.2s;
+}
+
+.btn-attr {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+body {
+  --header-shadow-color: #4441;
+}
+body header {
+  position: fixed;
+  width: 100%;
+  color: #fff;
+  background: #242424;
+  height: 50px;
+  padding: 10px;
+  top: 0;
+  box-shadow: 0 5px 10px var(--header-shadow-color);
+  z-index: 100000000;
+}
+body header .logo {
+  cursor: default;
+}
+body header .logo h2 {
+  font-family: 1.5rem;
+  font-weight: 500;
+}
+body header nav {
+  list-style: none;
+  gap: 2px;
+}
+body header nav li {
+  color: #eee;
+  padding: 5px 7px;
+  text-transform: capitalize;
+}
+body header nav li a {
+  color: inherit;
+  cursor: pointer;
+  text-decoration-color: transparent;
+}
+body header nav li a:hover, body header nav li a:focus {
+  text-decoration-color: initial;
+}
+body header nav .selected {
+  background: #4a4a4a;
+  border-radius: 3px;
+}
+body header .lightmode {
+  color: #eee;
+  font-size: 1.3rem;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 3px;
+  background: #4a4a4a;
+  opacity: 1;
+}
+body header .lightmode:hover, body header .lightmode:focus {
+  opacity: 75%;
+}
+body main .fix {
+  height: 50px;
+}
+body main section {
+  z-index: 1;
+}
+body main .subtitle {
+  position: relative;
+  height: 10vh;
+  min-height: 50px;
+  max-height: 100px;
+  text-align: center;
+  background: #222;
+  font-size: 2rem;
+  color: #eee;
+  box-shadow: 0 0 10px 4px var(--header-shadow-color);
+  z-index: 2;
+}
+body main section#presentation {
+  width: 100%;
+  height: calc(90vh - 50px);
+  color: #fff;
+  background: #333;
+  gap: 1em;
+}
+body main section#presentation h1 {
+  --shadow-color: #fff4;
+  font-size: 4rem;
+  text-shadow: 0 2px 2px var(--shadow-color);
+}
+body main section#presentation span.quote {
+  font-size: 1.2rem;
+  opacity: 92.5%;
+}
+body main section#presentation .quick-actions {
+  gap: 1em;
+}
+body main section#presentation .quick-actions button {
+  --shadow-color: #4442;
+  background: rgba(26, 26, 26, 0.5333333333);
+  padding: 10px 12px;
+  color: #fff;
+  font-family: "Inter";
+  font-size: 1rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px 1px var(--shadow-color);
+  text-transform: capitalize;
+}
+body main section#presentation .quick-actions button:first-child {
+  background: #24c;
+}
+body main section#presentation .quick-actions button:hover, body main section#presentation .quick-actions button:focus {
+  background: #161616;
+}
+body main section#carousel-demo {
+  height: 90vh;
+  width: 100%;
+  --c1: #555;
+  --c2: #222;
+  background: radial-gradient(circle at 80%, var(--c1) 0%, var(--c2) 66%);
+}
+body main section#carousel-demo > div {
+  height: 100%;
+}
+body main section#carousel-demo .content {
+  width: 30%;
+  min-width: 200px;
+  color: #eee;
+}
+body main section#carousel-demo .content h3 {
+  font-size: 3rem;
+  font-weight: 400;
+}
+body main section#carousel-demo .carousel {
+  max-width: 700px;
+  width: 60%;
+  min-width: 250px;
+}
+body main section#carousel-demo .carousel .carousel-demo {
+  width: 100%;
+  min-height: 100px;
+  height: 50%;
+}
+body main section#carousel-demo .carousel .carousel-demo .content {
+  width: 80%;
+  height: 80%;
+  max-width: calc(100% - 50px);
+  border-radius: 10px;
+  background: #f6f6f6;
+  border-radius: 1px solid #ddd;
+  box-shadow: 4px 4px 8px rgba(34, 68, 204, 0.1333333333), 0 0 10px rgba(255, 255, 255, 0.1333333333), inset 5px 5px 1em #fff;
+  color: #000;
+}
+body.light {
+  --header-shadow-color: #2223;
+}
+body.light main section#presentation {
+  color: #222;
+  background: #eee;
+}
+body.light main section#presentation h1 {
+  --shadow-color: #2224 ;
+}
+body.light main section#presentation .quick-actions button {
+  --shadow-color: #2223 ;
+}
+body.light main section#carousel-demo {
+  --c1: #bbb;
+  --c2: #eee;
+}
+body.light main section#carousel-demo .content {
+  color: #000;
+}/*# sourceMappingURL=index.css.map */
