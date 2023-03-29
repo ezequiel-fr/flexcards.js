@@ -53,7 +53,7 @@ bellow to use flexcards.js.
 <br /> For more informations about the functions used, go to [function](#functions) category.
 If you don't want to download, you can use the UNPKG link :
 ```
-https://unpkg.com/flexcardsjs/dist/flexcards.min.js
+https://unpkg.com/flexcardsjs/index.min.js
 ```
 
 #### Setup
