@@ -126,6 +126,7 @@ class FlexCards {
     }
     carousel(params = {
         colorized: true,
+        delay: undefined,
         indexType: "dots",
         theme: "#444",
         timer: true,
@@ -137,20 +138,26 @@ class FlexCards {
             return arr.map((_a, b) => arr[b + (arr[b + step] ? step
                 : Math.sign(-step) * (this.length - Math.abs(step)))]);
         };
+        // Set new delay
+        if (params.delay)
+            this.delay = Math.abs(params.delay);
         // Set slides
         const setSlides = (slides) => slides.forEach((slide, key) => {
             this.slides[key] = slide;
             content.appendChild(slide);
         });
+        // Scroll shortcuts
+        const scrollContent = (x, behavior = "auto") => content.scroll({
+            left: content.clientWidth * x, behavior
+        });
+        const resetScroll = () => scrollContent(scrollStep);
         // Apply a first order
         /** @const scrollStep positive number */
         const scrollStep = Math.abs(Math.round(this.length / 2 - 1));
         setSlides(getOrder(this.slides, -scrollStep));
-        content.scroll({ left: content.clientWidth * scrollStep, behavior: "auto" });
+        resetScroll();
         // Window resized event (prevent glitch)
-        window.addEventListener('resize', () => content.scroll({
-            left: content.clientWidth * scrollStep, behavior: "auto"
-        }));
+        window.addEventListener('resize', resetScroll);
         // Set arrows
         let arrow_a = document.createElement("button"), arrow_b = document.createElement("button"), image_a = document.createElement("img"), image_b = document.createElement("img");
         arrow_a.classList.add(setClass('arrow'), 'left');
@@ -194,7 +201,7 @@ class FlexCards {
             arrow_b.style.filter = filter;
         }
         // Set timer
-        if (!params.hasOwnProperty('theme') || params.colorized) {
+        if (!params.hasOwnProperty('timer') || params.timer) {
             const timerDisplay = document.createElement('span');
             let iterations = this.delay / this["refresh-time"] * 2;
             timerDisplay.classList.add(setClass('timer'));
@@ -233,29 +240,25 @@ class FlexCards {
         }
         // render function
         function render(step = 0) {
-            this.index += step;
             // Remove interval and reset time elapsed
             this.pause();
             this.timeElapsed = 0;
+            this.index += step;
             // Index must be between 0 and length
             if (this.index < 0)
                 this.index += this.length;
             else if (this.index >= this.length)
                 this.index = 0;
             // Scroll and then change order
+            content.removeEventListener('scroll', onScroll);
             let order = getOrder(this.slides, step);
             while (order[scrollStep].dataset.id !== this.index.toString())
                 order = getOrder(order, step);
-            content.removeEventListener('scroll', onScroll);
-            content.scroll({
-                left: content.clientWidth * (scrollStep + step),
-                behavior: 'smooth',
-            });
+            scrollContent(scrollStep + step, "smooth");
             setTimeout(() => {
-                setSlides(order);
-                content.scroll({ left: content.clientWidth * scrollStep, behavior: 'auto' });
-                content.addEventListener('scroll', onScroll);
-            }, 600);
+                setSlides(order), resetScroll();
+                setTimeout(() => content.addEventListener('scroll', onScroll));
+            }, step === 0 ? 0 : 600);
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
             // Reset intervals
@@ -267,12 +270,17 @@ class FlexCards {
             render.call(this, Number(arrow.classList.contains('left')) * -2 + 1);
             arrow.blur();
         }
-        function onScroll() {
-            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1;
+        // Scroll event
+        let isScrolling = setTimeout(() => void 0, this.delay);
+        const onScroll = () => {
+            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1, direction = 0;
             calc = Math.round(calc * 100);
-            if (Math.abs(calc) >= 4)
-                (Math.sign(calc) + 1 ? arrow_b : arrow_a).click();
-        }
+            direction = Math.sign(calc);
+            clearTimeout(isScrolling);
+            isScrolling = setTimeout(() => (Math.abs(calc) >= 4
+                ? render.call(this, direction)
+                : scrollContent(scrollStep, "smooth")), this["refresh-time"] / 2);
+        };
         // onclick function (arrows)
         [arrow_a, arrow_b].forEach(arrow => arrow.onclick = e => onArrowClick.call(this, e));
         // Scroll event fix
