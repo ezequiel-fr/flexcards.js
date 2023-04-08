@@ -252,13 +252,20 @@ class FlexCards {
             // Scroll and then change order
             content.removeEventListener('scroll', onScroll);
             let order = getOrder(this.slides, step);
-            while (order[scrollStep].dataset.id !== this.index.toString())
+            for (let i = 0; i < this.length; i++) {
                 order = getOrder(order, step);
-            scrollContent(scrollStep + step, "smooth");
-            setTimeout(() => {
-                setSlides(order), resetScroll();
-                setTimeout(() => content.addEventListener('scroll', onScroll));
-            }, step === 0 ? 0 : 600);
+                if (order[scrollStep].dataset.id !== this.index.toString())
+                    break;
+            }
+            if (step !== 0) {
+                scrollContent(scrollStep + step, "smooth");
+                setTimeout(() => {
+                    setSlides(order), resetScroll();
+                    setTimeout(() => content.addEventListener('scroll', onScroll));
+                }, 600);
+            }
+            else
+                setTimeout(resetScroll, this["refresh-time"] * .4);
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
             // Reset intervals
@@ -279,7 +286,7 @@ class FlexCards {
             clearTimeout(isScrolling);
             isScrolling = setTimeout(() => (Math.abs(calc) >= 4
                 ? render.call(this, direction)
-                : scrollContent(scrollStep, "smooth")), this["refresh-time"] / 2);
+                : scrollContent(scrollStep, "smooth")), this["refresh-time"] * .4);
         };
         // onclick function (arrows)
         [arrow_a, arrow_b].forEach(arrow => arrow.onclick = e => onArrowClick.call(this, e));

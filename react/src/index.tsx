@@ -289,7 +289,7 @@ export const Carousel: React.FC<FlexCardsParams> = ({
 			Math.abs(calc) >= 4
 				? render(direction)
 				: scrollContent(scrollStep, "smooth")
-		), refreshTime / 2);
+		), refreshTime * .4);
     }
 
     // Dot clicked

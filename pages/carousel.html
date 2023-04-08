@@ -26,13 +26,22 @@
 
         #flexcards {
             margin: 1em;
-            min-width: 200px;
+            min-width: 250px;
             width: calc(50vw - 3em);
             height: calc(calc(50vw - 2em) * 9 / 16);
             border: 1px solid #000;
         }
 
         .basic article { padding: 2em }
+
+        @media screen and (max-width: 500px) {
+            #flexcards {
+                width: calc(100vw - 4em);
+                height: calc(calc(100vw - 2em) * 3 / 4);
+            }
+
+            .basic article { padding: .5em 2em }
+        }
     </style>
 
 </head>

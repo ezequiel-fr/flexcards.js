@@ -369,15 +369,19 @@ class FlexCards {
             content.removeEventListener('scroll', onScroll);
             let order = getOrder(this.slides, step);
 
-            while (order[scrollStep].dataset.id !== this.index.toString())
+            for (let i = 0; i < this.length; i++) {
                 order = getOrder(order, step);
+                if (order[scrollStep].dataset.id !== this.index.toString()) break;
+            }
 
-            scrollContent(scrollStep + step, "smooth");
+            if (step !== 0) {
+                scrollContent(scrollStep + step, "smooth");
 
-            setTimeout(() => {
-                setSlides(order), resetScroll();
-                setTimeout(() => content.addEventListener('scroll', onScroll));
-            }, step === 0 ? 0 : 600);
+                setTimeout(() => {
+                    setSlides(order), resetScroll();
+                    setTimeout(() => content.addEventListener('scroll', onScroll));
+                }, 600);
+            } else setTimeout(resetScroll, this["refresh-time"] * .4);
 
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
@@ -409,14 +413,14 @@ class FlexCards {
                 Math.abs(calc) >= 4
                     ? render.call(this, direction)
                     : scrollContent(scrollStep, "smooth")
-            ), this["refresh-time"] / 2);
+            ), this["refresh-time"] * .4);
         }
 
         // onclick function (arrows)
         [arrow_a, arrow_b].forEach(arrow => arrow.onclick = e => onArrowClick.call(this, e));
 
         // Scroll event fix
-        content.addEventListener('scroll', onScroll)
+        content.addEventListener('scroll', onScroll);
 
         // First render
         render.call(this);
