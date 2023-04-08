@@ -64,7 +64,7 @@ function init() {
         ], { type: "text/css" }));
 
         document.head.appendChild(css);
-        setTimeout(URL.revokeObjectURL, undefined, css.href);
+        css.addEventListener('load', () => URL.revokeObjectURL(css.href));
     }
 }
 

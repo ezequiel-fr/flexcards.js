@@ -150,7 +150,7 @@ class FlexCards {
             ], { type: "text/css" }));
 
             document.head.appendChild(css);
-            queueMicrotask(() => URL.revokeObjectURL(css.href));
+            css.addEventListener('load', () => URL.revokeObjectURL(css.href));
         }
 
         // Get time elapsed
@@ -239,8 +239,8 @@ class FlexCards {
         // Set arrows
         let arrow_a = document.createElement("button"),
             arrow_b = document.createElement("button"),
-            image_a = document.createElement("img"),
-            image_b = document.createElement("img");
+            image_a = new Image(),
+            image_b = new Image();
 
         arrow_a.classList.add(setClass('arrow'), 'left');
         arrow_b.classList.add(setClass('arrow'), 'right');
@@ -273,7 +273,12 @@ class FlexCards {
             image_a.src = imageUrl;
             image_b.src = imageUrl;
 
-            queueMicrotask(() => URL.revokeObjectURL(imageUrl));
+            let count = 0, checkImageLoaded = function () {
+                count++, (count === 2 && URL.revokeObjectURL(imageUrl));
+            };
+
+            image_a.addEventListener('load', () => checkImageLoaded);
+            image_b.addEventListener('load', () => checkImageLoaded);
         }
 
         // Set theme
