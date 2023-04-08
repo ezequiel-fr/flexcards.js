@@ -64,7 +64,7 @@ function init() {
         ], { type: "text/css" }));
 
         document.head.appendChild(css);
-        setTimeout(URL.revokeObjectURL, undefined, css.href);
+        css.addEventListener('load', () => URL.revokeObjectURL(css.href));
     }
 }
 
@@ -175,10 +175,12 @@ export const Carousel: React.FC<FlexCardsParams> = ({
 
         // Scroll and then change order
 		content.current.removeEventListener('scroll', onScroll);
-        let order = getOrder(slides, step);
+        let order = getOrder(slides, step), i = 0;
 
-        while (order[scrollStep].current.dataset.id !== index.toString())
-            order = getOrder(order, step);
+		while (order[scrollStep].current.dataset.id !== index.toString() && i <= index) {
+			order = getOrder(order, step);
+			i++;
+		}
 
         scrollContent(scrollStep + step, "smooth");
 
