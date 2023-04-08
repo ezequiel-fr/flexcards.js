@@ -251,11 +251,10 @@ class FlexCards {
                 this.index = 0;
             // Scroll and then change order
             content.removeEventListener('scroll', onScroll);
-            let order = getOrder(this.slides, step);
-            for (let i = 0; i < this.length; i++) {
+            let order = getOrder(this.slides, step), i = 0;
+            while (order[scrollStep].dataset.id !== this.index.toString() && i <= this.index) {
                 order = getOrder(order, step);
-                if (order[scrollStep].dataset.id !== this.index.toString())
-                    break;
+                i++;
             }
             if (step !== 0) {
                 scrollContent(scrollStep + step, "smooth");
