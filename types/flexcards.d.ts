@@ -17,6 +17,8 @@ interface FlexCardsParams extends Object {
     arrowUrl?: string;
     /** Apply a filter or not to the arrow (works better on SVG dark arrows) */
     colorized?: boolean;
+    /** The delay used between every changes */
+    delay?: number;
     /** Show the index display to be on top of the carousel */
     indexType?: "dots" | "numbers" | "none";
     /** Hexadecimal color code to apply to the instance */

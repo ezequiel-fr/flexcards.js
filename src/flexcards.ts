@@ -17,6 +17,8 @@ interface FlexCardsParams extends Object {
     arrowUrl?: string;
     /** Apply a filter or not to the arrow (works better on SVG dark arrows) */
     colorized?: boolean;
+    /** The delay used between every changes */
+    delay?: number;
     /** Show the index display to be on top of the carousel */
     indexType?: "dots" | "numbers" | "none";
     /** Hexadecimal color code to apply to the instance */
@@ -191,6 +193,7 @@ class FlexCards {
 
     public carousel(params: FlexCardsParams = {
         colorized: true,
+        delay: undefined,
         indexType: "dots",
         theme: "#444",
         timer: true,
@@ -208,23 +211,30 @@ class FlexCards {
             ]);
         };
 
+        // Set new delay
+        if (params.delay) this.delay = Math.abs(params.delay);
+
         // Set slides
         const setSlides = (slides: HTMLElement[]) => slides.forEach((slide, key) => {
             this.slides[key] = slide;
             content.appendChild(slide);
         });
 
+        // Scroll shortcuts
+        const scrollContent = (x: number, behavior: ScrollBehavior = "auto") => content.scroll({
+            left: content.clientWidth * x, behavior
+        });
+        const resetScroll = () => scrollContent(scrollStep);
+
         // Apply a first order
         /** @const scrollStep positive number */
         const scrollStep = Math.abs(Math.round(this.length / 2 - 1));
 
         setSlides(getOrder(this.slides, -scrollStep));
-        content.scroll({ left: content.clientWidth * scrollStep, behavior: "auto" });
+        resetScroll();
 
         // Window resized event (prevent glitch)
-        window.addEventListener('resize', () => content.scroll({
-            left: content.clientWidth * scrollStep, behavior: "auto"
-        }));
+        window.addEventListener('resize', resetScroll);
 
         // Set arrows
         let arrow_a = document.createElement("button"),
@@ -285,7 +295,7 @@ class FlexCards {
         }
 
         // Set timer
-        if (!params.hasOwnProperty('theme') || params.colorized) {
+        if (!params.hasOwnProperty('timer') || params.timer) {
             const timerDisplay = document.createElement('span');
             let iterations = this.delay / this["refresh-time"] * 2;
 
@@ -344,34 +354,34 @@ class FlexCards {
         }
 
         // render function
-        function render(this: FlexCards, step: number = 0) {
-            this.index += step;
-
+        function render(this: FlexCards, step: number = 0) {            
             // Remove interval and reset time elapsed
             this.pause();
             this.timeElapsed = 0;
+
+            this.index += step;
 
             // Index must be between 0 and length
             if (this.index < 0) this.index += this.length;
             else if (this.index >= this.length) this.index = 0;
 
             // Scroll and then change order
+            content.removeEventListener('scroll', onScroll);
             let order = getOrder(this.slides, step);
 
-            while (order[scrollStep].dataset.id !== this.index.toString())
+            for (let i = 0; i < this.length; i++) {
                 order = getOrder(order, step);
+                if (order[scrollStep].dataset.id !== this.index.toString()) break;
+            }
 
-            content.removeEventListener('scroll', onScroll);
-            content.scroll({
-                left: content.clientWidth * (scrollStep + step),
-                behavior: 'smooth',
-            });
+            if (step !== 0) {
+                scrollContent(scrollStep + step, "smooth");
 
-            setTimeout(() => {
-                setSlides(order);
-                content.scroll({ left: content.clientWidth * scrollStep, behavior: 'auto' });
-                content.addEventListener('scroll', onScroll);
-            }, 600);
+                setTimeout(() => {
+                    setSlides(order), resetScroll();
+                    setTimeout(() => content.addEventListener('scroll', onScroll));
+                }, 600);
+            } else setTimeout(resetScroll, this["refresh-time"] * .4);
 
             // Toggle index
             index.querySelectorAll('span').forEach(el => el.dispatchEvent(new Event('update')));
@@ -388,11 +398,22 @@ class FlexCards {
             arrow.blur();
         }
 
-        function onScroll() {
-            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1;
-            calc = Math.round(calc * 100);
+        // Scroll event
+        let isScrolling = setTimeout(() => void 0, this.delay);
 
-            if (Math.abs(calc) >= 4) (Math.sign(calc) + 1 ? arrow_b : arrow_a).click();
+        const onScroll = () => {
+            let calc = content.scrollLeft / (content.clientWidth * scrollStep) - 1,
+                direction = 0;
+
+            calc = Math.round(calc * 100);
+            direction = Math.sign(calc);
+            clearTimeout(isScrolling);
+
+            isScrolling = setTimeout(() => (
+                Math.abs(calc) >= 4
+                    ? render.call(this, direction)
+                    : scrollContent(scrollStep, "smooth")
+            ), this["refresh-time"] * .4);
         }
 
         // onclick function (arrows)

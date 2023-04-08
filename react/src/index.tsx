@@ -122,10 +122,6 @@ export const Carousel: React.FC<FlexCardsParams> = ({
         setTimeout(URL.revokeObjectURL, undefined, arrowUrl);
     }
 
-    const resetScroll = () => content.current.scroll({
-        left: content.current.clientWidth * scrollStep, behavior: "auto"
-    });
-
     // Set theme
     let theme = params.theme || "#444";
 
@@ -160,34 +156,36 @@ export const Carousel: React.FC<FlexCardsParams> = ({
     /** @const scrollStep positive number */
     const scrollStep = Math.abs(Math.round(children.length / 2 - 1));
 
-    function render(step = 0) {
-        index += step;
+	// Scroll shortcuts
+	const scrollContent = (x: number, behavior: ScrollBehavior = "auto") => content.current.scroll(
+		{ left: content.current.clientWidth * x, behavior }
+	);
+	const resetScroll = () => scrollContent(scrollStep);
 
+    function render(step = 0) {
         // Remove interval and reset time elapsed
         pause();
         timeElapsed = 0
 
+		index += step;
+
         // Index must be between 0 and length
         if (index < 0) index += length;
-        else if (index >= length) index %= length;
+        else if (index >= length) index = 0;
 
         // Scroll and then change order
+		content.current.removeEventListener('scroll', onScroll);
         let order = getOrder(slides, step);
 
         while (order[scrollStep].current.dataset.id !== index.toString())
             order = getOrder(order, step);
 
-        content.current.removeEventListener('scroll', onScroll);
-        content.current.scroll({
-            left: content.current.clientWidth * (scrollStep + step),
-            behavior: "smooth",
-        });
+        scrollContent(scrollStep + step, "smooth");
 
         setTimeout(() => {
-            setSlides(order);
-            resetScroll();
-            // content.current.addEventListener('scroll', onScroll);
-        }, 600);
+            setSlides(order), resetScroll();
+            setTimeout(() => content.current.addEventListener('scroll', onScroll));
+        }, step === 0 ? 0 : 600);
 
         // Toggle index
         indexDisplay.current.querySelectorAll('span').forEach(el =>
@@ -277,11 +275,21 @@ export const Carousel: React.FC<FlexCardsParams> = ({
     };
 
     // Scroll event
-    const onScroll = () => {
-        let calc = content.current.scrollLeft / (content.current.clientWidth * scrollStep);
-        calc = Math.round(calc * 100);
+	let isScrolling = setTimeout(() => void 0, delay);
 
-        if (Math.abs(calc) >= 4) (Math.sign(calc) + 1 ? arrow_b : arrow_a).current.click();
+    const onScroll = () => {
+        let calc = content.current.scrollLeft / (content.current.clientWidth * scrollStep),
+			direction = 0;
+
+        calc = Math.round(calc * 100);
+		direction = Math.sign(calc);
+		clearTimeout(isScrolling);
+
+        isScrolling = setTimeout(() => (
+			Math.abs(calc) >= 4
+				? render(direction)
+				: scrollContent(scrollStep, "smooth")
+		), refreshTime * .4);
     }
 
     // Dot clicked
