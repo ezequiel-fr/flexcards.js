@@ -1,0 +1,26 @@
+{
+  "name": "flexcardsjs",
+  "version": "3.0.0",
+  "description": "A Javascript library to improve your sliders, carousels and more, easily.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRedMineTheRedMine/flexcards.js.git"
+  },
+  "keywords": [
+    "react",
+    "sass",
+    "typescript",
+    "flexcardsjs"
+  ],
+  "author": "TheRedMine TheRedMine",
+  "license": "SEE LICENSE IN LICENSE",
+  "types": "./types",
+  "bugs": {
+    "url": "https://github.com/TheRedMineTheRedMine/flexcards.js/issues"
+  },
+  "homepage": "https://github.com/TheRedMineTheRedMine/flexcards.js#readme"
+}
