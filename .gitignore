@@ -1,3 +1,11 @@
-.test
-build/
-/*.bat
+# assets
+assets/*.css
+assets/*.map
+
+# node modules
+node_modules
+
+# build dir
+build
+lib
+tests

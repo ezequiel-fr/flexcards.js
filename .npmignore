@@ -21,3 +21,8 @@ tests
 
 # TypeScript config
 tsconfig.json
+
+# SASS files and maps
+assets/*.scss
+assets/*.map
+assets/*.css
