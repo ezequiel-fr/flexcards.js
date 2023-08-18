@@ -11,7 +11,7 @@ declare class FlexCards {
 
     constructor(element: string, options?: FlexCardsOptions);
 
-    protected initWithStyles(...styles: string[]): void;
+    protected initContainer(): void;
 }
 
 declare module 'flexcardsjs' {

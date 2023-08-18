@@ -1,4 +1,122 @@
-.flexcards__wrapper {
-    color: #000;
+[class*=flexcards__] {
     user-select: none;
+    box-sizing: border-box;
+}
+
+.flexcards__wrapper {
+    position: relative !important;
+    display: flex;
+    user-select: none;
+    flex-flow: column nowrap;
+    align-items: center;
+    user-select: none;
+
+    .flexcards__container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+
+        .flexcards__content {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: scroll hidden;
+            scroll-behavior: auto;
+
+            .flexcards__card-container {
+                position: relative;
+                min-width: 100%;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                user-select: inherit;
+
+                .flexcards__card {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            &::-webkit-scrollbar {
+                appearance: none;
+                display: none;
+            }
+        }
+
+        .flexcards__arrow {
+            position: absolute;
+            background: transparent;
+            height: 100%;
+            width: 30px;
+            cursor: pointer;
+            z-index: 2;
+            border: none;
+            outline: none;
+            transform: none;
+            transition: all .2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+
+            .flexcards__carret {
+                position: relative;
+                object-fit: contain;
+                pointer-events: none;
+                display: block;
+
+                &.flexcards__ob { width: 21px }
+            }
+
+            &:first-child {
+                left: 0;
+                img { transform: scale(-1) }
+            }
+
+            &:last-child { right: 0 }
+
+            &:hover, &:focus {
+                transform: scale(107%);
+                opacity: 75%;
+            }
+        }
+    }
+
+    .flexcards__components {
+        &.flexcards__time-indicator {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            z-index: 2;
+            top: 0;
+
+            &::before, &::after {
+                content: '';
+                display: block;
+                position: absolute;
+                height: 5px;
+                z-index: 2;
+                top: 0;
+                background: var(--theme);
+            }
+
+            &::before {
+                width: 100%;
+                opacity: 35%;
+            }
+
+            &::after {
+                transition: all linear;
+                width: calc(var(--size) * .5%);
+                opacity: 72.5%;
+            }
+        }
+    }
 }
