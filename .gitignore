@@ -6,6 +6,5 @@ assets/*.map
 node_modules
 
 # build dir
-build
-lib
-tests
+build/
+lib/

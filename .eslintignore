@@ -1,5 +1,5 @@
-assets
-node_modules
-src
-tests
-types
+assets/
+docs/
+node_modules/
+src/
+tests/
