@@ -8,7 +8,7 @@
 ## Summary :
 - [Installation & setup](#installation--setup)
     - [HTML5](#html5)
-    - [NPM](#npm)w
+    - [NPM](#npm)
     - [React](#react)
 - [Basic usage](#usage)
     - [Setup](#setup)
@@ -89,6 +89,10 @@ options for each instance:
 - **`components`** : `default` will load `article` (`<article>`) elements and `images` will load `<img>` elements.
 - **`theme`** : an hexadecimal color to apply as the theme of the flexcards instance.
 
+#### General events
+In addition to the options, you can also listen to the following events:
+- **`ready`** : Triggered when the flexcards instance is ready.
+
 ### Carousel
 A simple and customizable JavaScript and CSS carousel designed for smooth transitions and flexible
 configuration.
@@ -108,6 +112,12 @@ configuration.
  - **`prev(n)`** : Go to the previous slide. If `n` is provided, go to the `n`th previous slide.
  - **`pause()`** : Pause the carousel.
  - **`play()`** : Play the carousel.
+
+#### Events
+ - **`pause`** : Triggered when the carousel is paused.
+ - **`play`** : Triggered when the carousel is played.
+ - **`animationStart`** : Triggered when the carousel starts an animation.
+ - **`animationEnd`** : Triggered when the carousel ends an animation.
 
 
 ## Thanks
