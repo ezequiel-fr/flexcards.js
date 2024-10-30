@@ -1,4 +1,6 @@
-const { join } = require('path');
+const { join } = require('node:path');
+
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -57,6 +59,11 @@ module.exports = {
         libraryTarget: "umd",
     },
     plugins: [
+        new HTMLWebpackPlugin({
+            inject: 'head',
+            scriptLoading: 'defer',
+            template: 'docs/demo.html',
+        }),
         new MiniCSSExtractPlugin({
             filename: 'style.css',
         }),

@@ -2,8 +2,12 @@
 assets/*.css
 assets/*.map
 
-# node modules
-node_modules
+# node modules/files
+node_modules/
+package-lock.json
+
+# IDE files
+.vscode/
 
 # build dir
 build/

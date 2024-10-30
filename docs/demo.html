@@ -5,12 +5,83 @@
     <title>flexcards.js - demos</title>
 
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        #carousel {
+            width: 800px;
+            height: 450px;
+            border: 1px solid #000;
+        }
+
+        #carousel .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10%;
+            font-family: 'Inter', 'Poppins', Arial;
+        }
+    </style>
 
 </head>
 <body>
 
-    <!--  -->
+    <div id="carousel">
+        <article class="card">
+            <h1>Card 1</h1>
+            <p>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+            </p>
+        </article>
+
+        <article class="card">
+            <h1>Card 2</h1>
+            <p>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+            </p>
+        </article>
+
+        <article class="card">
+            <h1>Card 3</h1>
+            <p>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa perspiciatis
+                ex error animi sunt labore, dicta, aut consectetur dolorum magnam excepturi
+                quas nostrum vero, veritatis adipisci atque ipsa ullam fuga!
+            </p>
+        </article>
+
+        <img src="./demo/wallpaper_1.jpg" alt="WP1">
+        <img src="./demo/wallpaper_2.jpg" alt="WP2">
+        <img src="./demo/wallpaper_3.jpg" alt="WP3">
+        <img src="./demo/wallpaper_4.jpg" alt="WP4">
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            window.carousel = new FlexCards.Carousel('#carousel', {
+                components: 'images',
+                // delay: 4e3,
+                displayIndex: "dots",
+                progressBar: true,
+                theme: '#f50',
+            });
+        }
+
+        window.onkeypress = function(e) {
+            if (e.key === 'F') {
+                window.carousel.container.style.width = '100vw';
+                window.carousel.container.style.height = '100vh';
+                document.body.style.margin = '0';
+                document.body.requestFullscreen();
+            }
+        }
+    </script>
 
 </body>
 </html>

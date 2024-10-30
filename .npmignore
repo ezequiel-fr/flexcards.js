@@ -3,6 +3,8 @@
 
 # NPM
 .npmrc
+.npmignore
+node_modules/
 
 # gitignore
 .gitignore
@@ -16,8 +18,10 @@
 .prettierignore
 
 # Dir
-src
-tests
+build/*.html
+build/*.scss
+docs/
+src/
 
 # TypeScript config
 tsconfig.json
