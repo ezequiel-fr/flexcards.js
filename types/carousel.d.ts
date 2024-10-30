@@ -49,25 +49,9 @@ interface CarouselEvents {
  * @template CarouselElements, CarouselEvents
  */
 declare class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
-    /** @var delay delay before next slide */
-    private _delay;
-    /** @var autoplay autoplay slides */
-    private autoplay;
-    /** @var loop loop slides */
-    private loop;
-    /** @var displayIndex type of index to display at the bottom */
-    private displayIndex;
-    /** @var currentSlide current slide index */
-    private currentSlide;
+    #private;
     /** @var index current slide index (do not change manually !) */
     index: number;
-    private scrollStep;
-    /** @var playing whether the carousel is playing */
-    private playing;
-    /** @var interval interval for autoplay */
-    private interval;
-    /** @var getElapsedTime interval for elapsed time */
-    private getElapsedTime;
     /** @var elapsedTime elapsed time since last slide */
     elapsedTime: number;
     /**
@@ -76,7 +60,6 @@ declare class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @param options carousel options
      */
     constructor(element: string, options?: CarouselOptions);
-    private set setCurrentSlide(value);
     /**
      * Get delay between each slides
      * @return delay before next slide (in ms)
@@ -90,28 +73,6 @@ declare class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @return void
      */
     set delay(value: number);
-    /** Set the scrollStep value */
-    private updateScrollStep;
-    /**
-     * Set slides in the carousel
-     * @param slides HTMLElement[]
-     */
-    private setSlides;
-    /** Get new slides order */
-    private getOrder;
-    /**
-     * Scroll the content to the next slide
-     * @param x number of slides to scroll
-     * @param behavior scroll behavior
-     * @private
-     */
-    private scrollContent;
-    /** Reset the scroll to the center of the carousel */
-    private resetScroll;
-    /** Basically, render the carousel based one the changing `step` */
-    private showSlide;
-    /** Reset the timer for autoplay */
-    private resetTimer;
     /**
      * Show next slide
      * @return void

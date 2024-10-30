@@ -20,7 +20,7 @@ interface FlexCardsEvents {
     ready: () => void;
 }
 /** FlexCards class */
-declare class FlexCards<Components = Record<string, HTMLElement>, Events = FlexCardsEvents> extends EventEmitter {
+declare abstract class FlexCards<Components = Record<string, HTMLElement>, Events = FlexCardsEvents> extends EventEmitter {
     /** The container element. */
     container: HTMLDivElement;
     /** The components of the FlexCards instance. */

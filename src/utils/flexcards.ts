@@ -23,7 +23,7 @@ interface FlexCardsEvents {
 }
 
 /** FlexCards class */
-class FlexCards<Components = Record<string, HTMLElement>, Events = FlexCardsEvents> extends EventEmitter {
+abstract class FlexCards<Components = Record<string, HTMLElement>, Events = FlexCardsEvents> extends EventEmitter {
     /** The container element. */
     public container: HTMLDivElement;
     /** The components of the FlexCards instance. */

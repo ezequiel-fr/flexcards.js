@@ -1,6 +1,6 @@
 {
   "name": "flexcardsjs",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A Javascript library to improve your sliders, carousels and more, easily.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,8 +18,8 @@
     "typescript",
     "flexcardsjs"
   ],
-  "author": "TheRedMine TheRedMine",
-  "license": "SEE LICENSE IN LICENSE",
+  "author": "ezequiel-fr",
+  "license": "./LICENSE",
   "types": "./types",
   "bugs": {
     "url": "https://github.com/ezequiel-fr/flexcards.js/issues"

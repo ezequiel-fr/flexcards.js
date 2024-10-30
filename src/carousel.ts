@@ -55,35 +55,35 @@ interface CarouselEvents {
  */
 class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
     /** @var delay delay before next slide */
-    private _delay = 6e3;
+    #_delay = 6e3;
 
     /** @var autoplay autoplay slides */
-    private autoplay: boolean;
+    #autoplay: boolean;
     /** @var loop loop slides */
-    private loop: boolean;
+    #loop: boolean;
     /** @var displayIndex type of index to display at the bottom */
-    private displayIndex: Omit<CarouselOptions["displayIndex"], "none"> | null = null;
+    #displayIndex: Omit<CarouselOptions["displayIndex"], "none"> | null = null;
 
     /** @var currentSlide current slide index */
-    private currentSlide = 0;
+    #currentSlide = 0;
     /** @var index current slide index (do not change manually !) */
     public index = 0;
 
     // work constants
-    private scrollStep = 0;
+    #scrollStep = 0;
     /** @var playing whether the carousel is playing */
-    private playing = false;
+    #playing = false;
 
     // intervals
     /** @var interval interval for autoplay */
-    private interval = {
+    #interval = {
         delay: 1e8,
         id: setInterval(() => void 0, 1e8),
         fn: this.next.bind(this),
     };
 
     /** @var getElapsedTime interval for elapsed time */
-    private getElapsedTime = {
+    #getElapsedTime = {
         id: setInterval(() => void 0, 1e8),
         fn: () => this.elapsedTime += 20,
     };
@@ -107,23 +107,23 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
         // Set options
         options?.delay && (this.delay = options.delay);
 
-        this.autoplay = options?.autoplay ?? true;
-        this.loop = options?.loop ?? true;
+        this.#autoplay = options?.autoplay ?? true;
+        this.#loop = options?.loop ?? true;
 
         if (options?.displayIndex) {
-            this.displayIndex = ["dots", "numbers"].includes(options.displayIndex)
+            this.#displayIndex = ["dots", "numbers"].includes(options.displayIndex)
                 ? options.displayIndex
                 : null;
         }
 
         // Apply a first order
-        this.updateScrollStep();
+        this.#updateScrollStep();
 
-        this.setSlides(this.getOrder(this.slides, -this.scrollStep));
-        this.resetScroll();
+        this.#setSlides(this.#getOrder(this.slides, -this.#scrollStep));
+        this.#resetScroll();
 
         // Set indexing if displayIndex is enabled
-        if (this.displayIndex) {
+        if (this.#displayIndex) {
             // Create index container
             const index = this.setClass(document.createElement('div'), 'components', 'index')
             index.style.setProperty('--color', "#" + this.theme);
@@ -132,7 +132,7 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
             this.container.appendChild(index);
 
             // Create index elements
-            if (this.displayIndex === "dots") {
+            if (this.#displayIndex === "dots") {
                 this.slides.forEach((_, key) => {
                     const dot = this.setClass(document.createElement('span'), 'dot');
 
@@ -159,17 +159,17 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
                         ));
 
                         // Check if the target is valid
-                        if (target < 0) return this.showSlide(0);
+                        if (target < 0) return this.#showSlide(0);
 
                         // Reset timer
-                        this.resetTimer();
+                        this.#resetTimer();
 
                         // Toggle current slide
-                        this.setCurrentSlide = target;
-                        this.showSlide(target - Math.round(this.slides.length / 2) + 1);
+                        this.#setCurrentSlide = target;
+                        this.#showSlide(target - Math.round(this.slides.length / 2) + 1);
                     };
                 });
-            } else if (this.displayIndex === "numbers") {
+            } else if (this.#displayIndex === "numbers") {
                 const current = this.setClass(this.createWithAttributes('span', {
                     textContent: (this.index + 1).toString(),
                 }), 'count');
@@ -244,7 +244,7 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
             // Set arrow listeners
             const arrowClick = (arrow: HTMLButtonElement) => {
                 // Reset timer
-                this.resetTimer();
+                this.#resetTimer();
                 // Blur the button
                 arrow.blur();
             };
@@ -273,26 +273,26 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
         }
 
         // Set some event listeners
-        this.on('play', () => this.playing = true);
-        this.on('pause', () => this.playing = false);
+        this.on('play', () => this.#playing = true);
+        this.on('pause', () => this.#playing = false);
 
         // Toggle in ready state
         this.emit('ready');
 
         // Play if autoplay is enabled
-        this.autoplay && this.play();
+        this.#autoplay && this.play();
 
         // Reset scroll on resize
-        window.addEventListener('resize', this.resetScroll);
+        window.addEventListener('resize', this.#resetScroll);
     }
 
-    private set setCurrentSlide(value: number) {
-        this.currentSlide += value;
+    set #setCurrentSlide(value: number) {
+        this.#currentSlide += value;
 
-        if (this.currentSlide < 0) {
-            this.currentSlide = this.slides.length - (this.currentSlide % this.slides.length);
+        if (this.#currentSlide < 0) {
+            this.#currentSlide = this.slides.length - (this.#currentSlide % this.slides.length);
         } else {
-            this.currentSlide %= this.slides.length;
+            this.#currentSlide %= this.slides.length;
         }
     }
 
@@ -302,7 +302,7 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @public
      */
     public get delay() {
-        return this._delay;
+        return this.#_delay;
     }
 
     /**
@@ -312,19 +312,19 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @return void
      */
     public set delay(value: number) {
-        this._delay = Math.max(Math.abs(value), 600);
+        this.#_delay = Math.max(Math.abs(value), 600);
     }
 
     /** Set the scrollStep value */
-    private updateScrollStep() {
-        this.scrollStep = Math.abs(Math.round(this.slides.length / 2 - 1));
+    #updateScrollStep() {
+        this.#scrollStep = Math.abs(Math.round(this.slides.length / 2 - 1));
     }
 
     /** 
      * Set slides in the carousel
      * @param slides HTMLElement[]
      */
-    private setSlides(slides: HTMLElement[]) {
+    #setSlides(slides: HTMLElement[]) {
         slides.forEach((slide, key) => {
             this.slides[key] = slide;
             this.components.content.appendChild(slide);
@@ -332,7 +332,7 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
     }
 
     /** Get new slides order */
-    private getOrder<T>(arr: T[], step = 1) {
+    #getOrder<T>(arr: T[], step = 1) {
         step %= this.slides.length;
 
         return arr.map((_, key) => arr[
@@ -349,7 +349,7 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @param behavior scroll behavior
      * @private
      */
-    private scrollContent(x: number, behavior: ScrollBehavior = "auto") {
+    #scrollContent(x: number, behavior: ScrollBehavior = "auto") {
         this.components.content.scroll({
             left: this.components.content.clientWidth * x,
             behavior,
@@ -357,21 +357,19 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
     }
 
     /** Reset the scroll to the center of the carousel */
-    private resetScroll = () => this.scrollContent(this.scrollStep);
+    #resetScroll = () => this.#scrollContent(this.#scrollStep);
 
     /** Basically, render the carousel based one the changing `step` */
-    private showSlide(step: number) {
-        const { scrollStep } = this;
-
+    #showSlide(step: number) {
         const oldIndex = this.index;
         this.index = (oldIndex + step + this.slides.length) % this.slides.length;
 
         // Get new order
-        let order = this.getOrder(this.slides, step),
+        let order = this.#getOrder(this.slides, step),
             i = 0;
 
-        while (order[scrollStep].dataset?.id !== this.index.toString() && i <= this.index) {
-            order = this.getOrder(order, step);
+        while (order[this.#scrollStep].dataset?.id !== this.index.toString() && i <= this.index) {
+            order = this.#getOrder(order, step);
             i++;
         }
 
@@ -386,35 +384,35 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
 
         if (step) {
             // scroll to next (smooth), update order, scroll to center (instant)
-            this.scrollContent(scrollStep + step, "smooth");
+            this.#scrollContent(this.#scrollStep + step, "smooth");
 
             setTimeout(() => {
-                this.setSlides(order);
-                this.resetScroll();
+                this.#setSlides(order);
+                this.#resetScroll();
 
                 step && this.emit('animationEnd');
             }, 600);
         } else {
-            setTimeout(this.resetScroll, 100);
+            setTimeout(this.#resetScroll, 100);
         }
 
         // Reset timer
-        this.resetTimer();
+        this.#resetTimer();
     }
 
     /** Reset the timer for autoplay */
-    private resetTimer() {
+    #resetTimer() {
         // Stop the carousel (intervals involved in)
-        clearInterval(this.interval.id);
+        clearInterval(this.#interval.id);
 
-        this.interval.id = setInterval(() => {
-            if (this.currentSlide === this.slides.length - 1 && !this.loop) {
+        this.#interval.id = setInterval(() => {
+            if (this.#currentSlide === this.slides.length - 1 && !this.#loop) {
                 this.pause();
             } else {
-                this.interval.fn();
+                this.#interval.fn();
             }
         }, this.delay);
-        this.interval.delay = this.delay;
+        this.#interval.delay = this.delay;
 
         // Reset elapsed time
         this.elapsedTime = 0;
@@ -431,8 +429,8 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
         if (!step || Number.isNaN(step)) return;
 
         // Set new slide
-        this.setCurrentSlide = step;
-        this.showSlide(step);
+        this.#setCurrentSlide = step;
+        this.#showSlide(step);
     }
 
     /**
@@ -445,8 +443,8 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
         if (!step || Number.isNaN(step)) return;
 
         // Set new slide
-        this.setCurrentSlide = step;
-        this.showSlide(step);
+        this.#setCurrentSlide = step;
+        this.#showSlide(step);
     }
 
     /**
@@ -454,34 +452,34 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      * @public
      */
     public play() {
-        if (!this.loop && this.currentSlide === this.slides.length - 1) {
+        if (!this.#loop && this.#currentSlide === this.slides.length - 1) {
             // Reset current slide to 0 and restart
             this.next();
 
             // Play if autoplay is enabled
-            this.autoplay && this.play();
-        } else if (!this.playing) {
+            this.#autoplay && this.play();
+        } else if (!this.#playing) {
             // Calc remaining time
             const remaining = Math.min(Math.abs(this.delay - this.elapsedTime), this.delay);
 
             // Set intervals
-            this.interval.id = setInterval(() => {
-                if (this.currentSlide === this.slides.length - 1 && !this.loop) {
+            this.#interval.id = setInterval(() => {
+                if (this.#currentSlide === this.slides.length - 1 && !this.#loop) {
                     this.pause();
                 } else {
-                    this.interval.fn();
+                    this.#interval.fn();
                 }
             }, remaining);
-            this.interval.delay = remaining;
+            this.#interval.delay = remaining;
 
-            this.getElapsedTime.id = setInterval(this.getElapsedTime.fn, 20);
+            this.#getElapsedTime.id = setInterval(this.#getElapsedTime.fn, 20);
 
             // Emit play event
             this.emit('play');
         }
 
         // Update playing state
-        this.playing = true;
+        this.#playing = true;
 
         return this;
     }
@@ -492,13 +490,13 @@ class Carousel extends FlexCards<CarouselElements, CarouselEvents> {
      */
     public pause() {
         // Clear intervals
-        clearInterval(this.interval.id);
-        clearInterval(this.getElapsedTime.id);
+        clearInterval(this.#interval.id);
+        clearInterval(this.#getElapsedTime.id);
 
         // Emit pause event
         this.emit('pause');
         // Update playing state
-        this.playing = false;
+        this.#playing = false;
 
         return this;
     }
